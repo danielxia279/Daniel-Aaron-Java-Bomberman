@@ -1,8 +1,16 @@
 package game;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
-public class GameWindow extends JPanel implements Runnable{
+
+/*
+This is where the game actually runs
+it manages refreshes the game 60 times every second based on the system clock
+all inputs are taken here, it calls GameStateManager to decide which version of the action it should perform, and the classes of each game state has the code for the action
+*/
+
+public class GameWindow extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
     private final int FPS = 60;
@@ -11,19 +19,25 @@ public class GameWindow extends JPanel implements Runnable{
 
     public GameWindow() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        addKeyListener(this);
+        setFocusable(true);
         launch();
     }
 
     private boolean isRunning = false;
     private Thread thread;
 
+    private GameStateManager gsm;
+
     private void launch(){
         isRunning = true;
         thread = new Thread(this);
         thread.start();
     }
+
     public void run(){
         long elapsedTime, startTime, waitTime;
+        gsm = new GameStateManager();
         while(isRunning){
             startTime = System.nanoTime();
             tick();
@@ -44,11 +58,28 @@ public class GameWindow extends JPanel implements Runnable{
     }
 
     public void tick(){
-        tickCount++;
-        if(tickCount % 60 == 0) System.out.println("Time Elapsed: " + tickCount / 60 + " second(s)");
+        gsm.tick();
     }
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+
+        g.clearRect(0, 0, WIDTH, HEIGHT);
+
+        gsm.draw(g);
     }
+
+    public void keyPressed(KeyEvent e){
+        gsm.keyPressed(e.getKeyCode());
+    }
+
+    public void keyReleased(KeyEvent e){
+        gsm.keyReleased(e.getKeyCode());
+    }
+
+    public void keyTyped(KeyEvent e){
+
+    }
+
+
 }
