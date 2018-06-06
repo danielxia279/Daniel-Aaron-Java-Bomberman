@@ -10,7 +10,7 @@ the functions tick, draw, keyPressed, keyReleased depend on the game state
 
 public class GameStateManager {
 
-    private Stack<GameStateTemplate> states;
+    public Stack<GameStateTemplate> states;
 
     public GameStateManager(){
         states = new Stack<GameStateTemplate>();
