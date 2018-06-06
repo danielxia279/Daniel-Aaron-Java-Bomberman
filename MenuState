@@ -1,0 +1,57 @@
+package game;
+
+import java.awt.*;
+import java.awt.event.*;
+
+/*
+This is the menu state
+*/
+
+public class MenuState extends GameStateTemplate {
+
+    private String[] options = {"Start", "Quit"};
+    private int current = 0;
+
+    public MenuState(GameStateManager gsm){
+        super(gsm);
+    }
+
+    public void init(){
+
+    }
+
+    public void tick(){
+
+    }
+
+    public void draw(Graphics g){
+        g.setFont(new Font("Arial", Font.ITALIC, 100));
+        g.drawString("Bomberman", GameWindow.WIDTH / 2 - 270, 150);
+        g.setFont(new Font("Arial", Font.PLAIN, 100));
+        for(int i = 0; i < options.length; i++){
+            if(i == current){
+                g.setColor(Color.RED);
+            }
+            else{
+                g.setColor(Color.BLACK);
+            }
+
+
+            g.drawString(options[i], GameWindow.WIDTH / 2 - 100, 300 + i * 120);
+        }
+
+    }
+
+    public void keyPressed(int k){
+        if(k == KeyEvent.VK_DOWN){
+            if(current < options.length - 1) current++;
+        }
+        else if(k == KeyEvent.VK_UP){
+            if(current > 0) current--;
+        }
+    }
+
+    public void keyReleased(int k){
+
+    }
+}
