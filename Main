@@ -9,7 +9,6 @@ Here, the game window is initialized
 */
 
 public class Main{
-    public static Game game();
     public static void main(String[] args) {
         JFrame frame = new JFrame("BomberGrid");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
