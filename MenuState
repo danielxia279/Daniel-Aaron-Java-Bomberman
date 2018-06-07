@@ -9,7 +9,7 @@ This is the menu state
 
 public class MenuState extends GameStateTemplate {
 
-    private String[] options = {"Start", "Quit"};
+    private String[] options = {"Start", "Instructions", "Quit"};
     private int current = 0;
 
     public MenuState(GameStateManager gsm){
@@ -36,8 +36,8 @@ public class MenuState extends GameStateTemplate {
                 g.setColor(Color.BLACK);
             }
 
-
-            g.drawString(options[i], GameWindow.WIDTH / 2 - 100, 300 + i * 120);
+            g.setFont(new Font("Arial", Font.ITALIC, 80));
+            g.drawString(options[i], GameWindow.WIDTH / 2 - 270, 300 + i * 120);
         }
 
     }
@@ -49,11 +49,14 @@ public class MenuState extends GameStateTemplate {
         else if(k == KeyEvent.VK_UP){
             if(current > 0) current--;
         }
-        if(k == KeyEvent.VK_ENTER){
+         if(k == KeyEvent.VK_ENTER){
             if(current == 0){
                 gsm.states.push(new Map(gsm));
             }
             else if(current == 1){
+                gsm.states.push(new InstructionsState(gsm));
+            }
+            else if(current == 2){
                 System.exit(0);
             }
 
