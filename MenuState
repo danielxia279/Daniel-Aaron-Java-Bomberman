@@ -49,6 +49,15 @@ public class MenuState extends GameStateTemplate {
         else if(k == KeyEvent.VK_UP){
             if(current > 0) current--;
         }
+        if(k == KeyEvent.VK_ENTER){
+            if(current == 0){
+                gsm.states.push(new Map(gsm));
+            }
+            else if(current == 1){
+                System.exit(0);
+            }
+
+        }
     }
 
     public void keyReleased(int k){
