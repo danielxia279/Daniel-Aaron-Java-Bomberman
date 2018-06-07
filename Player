@@ -1,25 +1,50 @@
 package game;
+
+import java.awt.*;
+import java.awt.event.*;
+
 public class Player {
-    float x, y, speed;
-    int size;
-    Player(float x, float y){
-        this.x=x;this.y=y;
-        speed = 5;
+
+    private boolean right = false, left = false, up = false, down = false;
+    private double x, y, velocity = 4;
+    private int size = 50;
+
+    public Player(double x, double y){
+        this.x = x;
+        this.y = y;
     }
-    void moveRight(){
-        if (Main.game.map.check(x+30+size, y)) return;
-        x+=speed;
+
+    public void tick(){
+        if(right){
+            x += velocity;
+        }
+        if(left){
+            x -= velocity;
+        }
+        if(up){
+            y-= velocity;
+        }
+        if(down){
+            y += velocity;
+        }
     }
-    void moveLeft(){
-        if (Main.game.map.check(x-speed, y)) return;
-        x-=speed;
+
+    public void draw(Graphics g){
+        g.setColor(Color.BLACK);
+        g.fillRect((int)x, (int)y, size, size);
     }
-    void moveDown(){
-        if (Main.game.map.check(x, y+size+speed)) return;
-        y+=speed;
+
+    public void keyPressed(int k){
+        if(k == KeyEvent.VK_RIGHT) right = true;
+        if(k == KeyEvent.VK_LEFT) left = true;
+        if(k == KeyEvent.VK_UP) up = true;
+        if(k == KeyEvent.VK_DOWN) down = true;
     }
-    void moveUp(){
-        if (Main.game.map.check(x, y+size-speed)) return;
-        y-=speed;
+
+    public void keyReleased(int k){
+        if(k == KeyEvent.VK_RIGHT) right = false;
+        if(k == KeyEvent.VK_LEFT) left = false;
+        if(k == KeyEvent.VK_UP) up = false;
+        if(k == KeyEvent.VK_DOWN) down = false;
     }
 }
