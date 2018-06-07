@@ -1,8 +1,25 @@
 package game;
 public class Player {
-    float x, y, velocity;
+    float x, y, speed;
+    int size;
     Player(float x, float y){
         this.x=x;this.y=y;
-        velocity = 5;
-    }    
+        speed = 5;
+    }
+    void moveRight(){
+        if (Main.game.map.check(x+30+size, y)) return;
+        x+=speed;
+    }
+    void moveLeft(){
+        if (Main.game.map.check(x-speed, y)) return;
+        x-=speed;
+    }
+    void moveDown(){
+        if (Main.game.map.check(x, y+size+speed)) return;
+        y+=speed;
+    }
+    void moveUp(){
+        if (Main.game.map.check(x, y+size-speed)) return;
+        y-=speed;
+    }
 }
