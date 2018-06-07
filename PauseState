@@ -1,0 +1,61 @@
+package game;
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class PauseState extends GameStateTemplate{
+
+    private String[] options = {"Resume", "Quit"};
+    private int current = 0;
+
+    public PauseState(GameStateManager gsm){
+        super(gsm);
+    }
+
+    public void init(){
+
+    }
+
+    public void tick(){
+
+    }
+
+    public void draw(Graphics g){
+        g.setFont(new Font("Arial", Font.PLAIN, 100));
+        for(int i = 0; i < options.length; i++){
+            if(i == current){
+                g.setColor(Color.RED);
+            }
+            else{
+                g.setColor(Color.BLACK);
+            }
+
+
+            g.drawString(options[i], GameWindow.WIDTH / 2 - 170, 200 + i * 120);
+        }
+
+    }
+
+    public void keyPressed(int k){
+        if(k == KeyEvent.VK_DOWN){
+            if(current < options.length - 1) current++;
+        }
+        else if(k == KeyEvent.VK_UP){
+            if(current > 0) current--;
+        }
+        if(k == KeyEvent.VK_ENTER){
+            if(current == 0){
+                gsm.states.pop();
+            }
+            else if(current == 1){
+                System.exit(0);
+            }
+
+        }
+    }
+
+    public void keyReleased(int k){
+
+    }
+}
+
