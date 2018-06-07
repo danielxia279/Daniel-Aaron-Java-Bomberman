@@ -1,18 +1,25 @@
 package game;
 public class Map {
-    int [][] grid = new int[16][14]; //0 = nothing, 1 = breakable, 2 = unbreakable
+    int [][] grid; //0 = nothing, 1 = breakable, 2 = unbreakable
     void initMap(){
-        grid = new int[16][14];
-        for (int i = 1; i<=15; i++){
-            for (int j = 1; j<=13; j++){
-                if (i==1||j==1||i==15||j==13||(i%2==1&&j%2==1)){
+        grid = new int[14][16];
+        for (int i = 1; i<=13; i++){
+            for (int j = 1; j<=15; j++){
+                if (i==1||j==1||i==13||j==15||(i%2==1&&j%2==1)){
                     grid[i][j]=2;
                 }
                 else{
                     int n = (int)Math.ceil(Math.random()*5);
                     grid[i][j]=n==1?0:1;
                 }
+                System.out.print(grid[i][j]+" ");
             }
+            System.out.println();
         }
+    }
+    boolean check (float x, float y){
+        int x1 = (int)x/50, y1 = (int)y/50;
+        x1++; y1++;
+        return grid[x1][y1]==0;
     }
 }
