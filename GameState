@@ -7,7 +7,7 @@ import java.awt.event.*;
 This is the playing field game state
 */
 
-public class Map extends GameStateTemplate{
+public class GameState extends GameStateTemplate{
 
     private Player playerOne, playerTwo;
     private Tile[] t;
@@ -18,7 +18,7 @@ public class Map extends GameStateTemplate{
         return t.contains(p);
     }
 
-    public Map(GameStateManager gsm){
+    public GameState(GameStateManager gsm){
         super(gsm);
     }
 
