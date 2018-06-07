@@ -1,25 +1,65 @@
 package game;
-public class Map {
-    int [][] grid; //0 = nothing, 1 = breakable, 2 = unbreakable
+
+import java.awt.*;
+import java.awt.event.*;
+
+/*
+This is the playing field game state
+*/
+
+public class Map extends GameStateTemplate{
+
+    private Player playerOne, playerTwo;
+    private Tile[] t;
+
+    private static int [][] grid = new int[16][14]; //0 = nothing, 1 = breakable, 2 = unbreakable
     void initMap(){
-        grid = new int[14][16];
-        for (int i = 1; i<=13; i++){
-            for (int j = 1; j<=15; j++){
-                if (i==1||j==1||i==13||j==15||(i%2==1&&j%2==1)){
+        grid = new int[16][14];
+        for (int i = 0; i < 16; i++){
+            for (int j = 0; j < 14; j++){
+                if (i == 0||j == 0||i == 16||j == 14||(i%2 == 1 && j%2 == 1)){
                     grid[i][j]=2;
                 }
                 else{
                     int n = (int)Math.ceil(Math.random()*5);
                     grid[i][j]=n==1?0:1;
                 }
-                System.out.print(grid[i][j]+" ");
             }
-            System.out.println();
         }
     }
-    boolean check (float x, float y){
-        int x1 = (int)x/50, y1 = (int)y/50;
-        x1++; y1++;
-        return grid[x1][y1]==0;
+
+    public static boolean collision(Point p, Tile t){
+        return t.contains(p);
+    }
+
+    public Map(GameStateManager gsm){
+        super(gsm);
+    }
+
+    public void init(){
+        playerOne = new Player(0, 0);
+        playerTwo = new Player(800, 600);
+    }
+
+    public void tick(){
+        playerOne.tick();
+        playerTwo.tick();
+
+    }
+
+    public void draw(Graphics g){
+        playerOne.draw(g);
+        playerTwo.draw(g);
+    }
+
+    public void keyPressed(int k){
+        playerOne.keyPressed(k);
+        playerTwo.keyPressed(k);
+        if(k == KeyEvent.VK_P) gsm.states.push(new PauseState(gsm));
+    }
+
+    public void keyReleased(int k) {
+        playerOne.keyReleased(k);
+        playerTwo.keyReleased(k);
     }
 }
