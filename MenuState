@@ -49,9 +49,9 @@ public class MenuState extends GameStateTemplate {
         else if(k == KeyEvent.VK_UP){
             if(current > 0) current--;
         }
-         if(k == KeyEvent.VK_ENTER){
+        if(k == KeyEvent.VK_ENTER){
             if(current == 0){
-                gsm.states.push(new Map(gsm));
+                gsm.states.push(new GameState(gsm));
             }
             else if(current == 1){
                 gsm.states.push(new InstructionsState(gsm));
@@ -59,7 +59,9 @@ public class MenuState extends GameStateTemplate {
             else if(current == 2){
                 System.exit(0);
             }
-
+        }
+        if (k == KeyEvent.VK_ESCAPE){
+            System.exit(0);
         }
     }
 
