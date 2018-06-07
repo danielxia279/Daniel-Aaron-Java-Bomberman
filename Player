@@ -7,11 +7,12 @@ public class Player {
 
     private boolean right = false, left = false, up = false, down = false;
     private double x, y, velocity = 4;
-    private int size = 50;
+    private int size = 50, type;
 
-    public Player(double x, double y){
+    public Player(double x, double y, int t){
         this.x = x;
         this.y = y;
+        this.type = t;
     }
 
     public void tick(){
@@ -30,21 +31,30 @@ public class Player {
     }
 
     public void draw(Graphics g){
-        g.setColor(Color.BLACK);
+        if (type==1) g.setColor(Color.RED);
+        else  g.setColor(Color.BLUE);
         g.fillRect((int)x, (int)y, size, size);
     }
 
     public void keyPressed(int k){
-        if(k == KeyEvent.VK_RIGHT) right = true;
-        if(k == KeyEvent.VK_LEFT) left = true;
-        if(k == KeyEvent.VK_UP) up = true;
-        if(k == KeyEvent.VK_DOWN) down = true;
+        if(k == KeyEvent.VK_D&&type==1) right = true;
+        if(k == KeyEvent.VK_A&&type==1) left = true;
+        if(k == KeyEvent.VK_W&&type==1) up = true;
+        if(k == KeyEvent.VK_S&&type==1) down = true;
+        if(k == KeyEvent.VK_L&&type==2) right = true;
+        if(k == KeyEvent.VK_J&&type==2) left = true;
+        if(k == KeyEvent.VK_I&&type==2) up = true;
+        if(k == KeyEvent.VK_K&&type==2) down = true;
     }
 
     public void keyReleased(int k){
-        if(k == KeyEvent.VK_RIGHT) right = false;
-        if(k == KeyEvent.VK_LEFT) left = false;
-        if(k == KeyEvent.VK_UP) up = false;
-        if(k == KeyEvent.VK_DOWN) down = false;
+        if(k == KeyEvent.VK_D&&type==1) right = false;
+        if(k == KeyEvent.VK_A&&type==1) left = false;
+        if(k == KeyEvent.VK_W&&type==1) up = false;
+        if(k == KeyEvent.VK_S&&type==1) down = false;
+        if(k == KeyEvent.VK_L&&type==2) right = false;
+        if(k == KeyEvent.VK_J&&type==2) left = false;
+        if(k == KeyEvent.VK_I&&type==2) up = false;
+        if(k == KeyEvent.VK_K&&type==2) down = false;
     }
 }
