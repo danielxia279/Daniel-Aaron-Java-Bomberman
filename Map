@@ -13,20 +13,6 @@ public class Map extends GameStateTemplate{
     private Tile[] t;
 
     private static int [][] grid = new int[16][14]; //0 = nothing, 1 = breakable, 2 = unbreakable
-    void initMap(){
-        grid = new int[16][14];
-        for (int i = 0; i < 16; i++){
-            for (int j = 0; j < 14; j++){
-                if (i == 0||j == 0||i == 16||j == 14||(i%2 == 1 && j%2 == 1)){
-                    grid[i][j]=2;
-                }
-                else{
-                    int n = (int)Math.ceil(Math.random()*5);
-                    grid[i][j]=n==1?0:1;
-                }
-            }
-        }
-    }
 
     public static boolean collision(Point p, Tile t){
         return t.contains(p);
@@ -37,8 +23,25 @@ public class Map extends GameStateTemplate{
     }
 
     public void init(){
-        playerOne = new Player(0, 0);
-        playerTwo = new Player(800, 600);
+        playerOne = new Player(0, 0, 1);
+        playerTwo = new Player(500, 500, 2);
+        grid = new int[14][16];
+        for (int i = 1; i <=13; i++){
+            for (int j = 1; j <=15; j++){
+                if (i == 1||j == 1||i == 13||j == 15||(i%2 == 1 && j%2 == 1)){
+                    grid[i][j]=2;
+                }
+                else{
+                    int n = (int)Math.ceil(Math.random()*5);
+                    grid[i][j]=n==1?0:1;
+                }
+                System.out.print(grid[i][j]+" ");
+            }
+            System.out.println();
+        }
+        grid[12][1]=0;
+        grid[1][14]=0;
+        
     }
 
     public void tick(){
