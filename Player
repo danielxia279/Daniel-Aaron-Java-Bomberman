@@ -11,14 +11,16 @@ public class Player {
 
     private boolean right = false, left = false, up = false, down = false;
     private double x, y, velocity = 4;
-    private int size = 50, type;
+    private int size = 35, type;
     private BufferedImage sprite;
     
     public Player(double x, double y, int t) {
         this.x = x;
         this.y = y;
         this.type = t;
-        try { sprite = ImageIO.read(new File("test.png"));}
+        try {
+             sprite = ImageIO.read(new File(t==1?"player1.png":"player2.png"));
+        }
         catch(IOException e){}
     }
 
