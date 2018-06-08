@@ -29,8 +29,8 @@ public class GameState extends GameStateTemplate{
         playerOne = new Player(0, 0, 1);
         playerTwo = new Player(500, 500, 2);
         try{
-            unbreakableSprite = ImageIO.read(new File("unbreakable.png"));
-            breakableSprite = ImageIO.read(new File("breakable.png"));
+            unbreakableSprite = ImageIO.read(new File("assets/unbreakable.png"));
+            breakableSprite = ImageIO.read(new File("assets/breakable.png"));
         }
         catch(IOException e){
             
