@@ -10,11 +10,11 @@ import javax.imageio.ImageIO;
 public class Player {
 
     private boolean right = false, left = false, up = false, down = false;
-    private double x, y, velocity = 4;
+    private int x, y, velocity = 4;
     private int size = 35, type;
     private BufferedImage sprite;
     
-    public Player(double x, double y, int t) {
+    public Player(int x, int y, int t) {
         this.x = x;
         this.y = y;
         this.type = t;
@@ -26,19 +26,39 @@ public class Player {
 
     public void tick(){
         if(right){
-            x += velocity;
+            moveRight(velocity);
         }
         if(left){
-            x -= velocity;
+            moveLeft(velocity);
         }
         if(up){
-            y-= velocity;
+            moveUp(velocity);
         }
         if(down){
-            y += velocity;
+            moveDown(velocity);
         }
     }
-
+    private void moveRight(int n){
+        while(n-->0&&GameState.check(x+1, y)){
+            x++;
+        }
+    }
+    private void moveLeft(int n){
+        while(n-->0&&GameState.check(x-1, y)){
+            x--;
+        }
+    }
+    private void moveUp(int n){
+        while(n-->0&&GameState.check(x, y-1)){
+            y--;
+        }
+    }
+    private void moveDown(int n){
+        while(n-->0&&GameState.check(x, y+1)){
+            y++;
+        }
+    }
+    
     public void draw(Graphics g){
         /*if (type==1) g.setColor(Color.RED);
         else  g.setColor(Color.BLUE);
