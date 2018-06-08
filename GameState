@@ -15,7 +15,7 @@ public class GameState extends GameStateTemplate{
     private Player playerOne, playerTwo;
     private Tile[] t;
     private BufferedImage unbreakableSprite, breakableSprite;
-    private static int [][] grid = new int[16][14]; //0 = nothing, 1 = breakable, 2 = unbreakable
+    private static int [][] grid = new int[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
 
     public static boolean collision(Point p, Tile t){
         return t.contains(p);
@@ -26,8 +26,8 @@ public class GameState extends GameStateTemplate{
     }
 
     public void init(){
-        playerOne = new Player(0, 0, 1);
-        playerTwo = new Player(500, 500, 2);
+        playerOne = new Player(80, 920, 1);
+        playerTwo = new Player(920, 80, 2);
         try{
             unbreakableSprite = ImageIO.read(new File("assets/unbreakable.png"));
             breakableSprite = ImageIO.read(new File("assets/breakable.png"));
@@ -35,28 +35,30 @@ public class GameState extends GameStateTemplate{
         catch(IOException e){
             
         }
-        grid = new int[14][16];
-        for (int i = 1; i <=13; i++){
+        grid = new int[16][16];
+        for (int i = 1; i <=15; i++){
             for (int j = 1; j <=15; j++){
-                if (i == 1||j == 1||i == 13||j == 15||(i%2 == 1 && j%2 == 1)){
-                    grid[i][j]=2;
+                if (i == 1||j == 1||i == 15||j == 15||(i%2 == 1 && j%2 == 1)){
+                    grid[i][j]=4;
                 }
                 else{
                     int n = (int)Math.ceil(Math.random()*5);
-                    grid[i][j]=n==1?0:1;
+                    grid[i][j]=n==1?1:2;
                 }
+            }
+        }
+        grid[14][2]=1;
+        grid[13][2]=1;
+        grid[14][3]=1;
+        grid[2][14]=1;
+        grid[2][13]=1;
+        grid[3][14]=1;
+        for (int i = 1; i<= 15; i++){
+            for (int j = 1; j<=15; j++){
                 System.out.print(grid[i][j]+" ");
             }
             System.out.println();
         }
-        grid[12][2]=0;
-        grid[11][2]=0;
-        grid[12][3]=0;
-        grid[2][14]=0;
-        grid[3][14]=0;
-        grid[2][13]=0;
-
-        
     }
 
     public void tick(){
@@ -66,24 +68,43 @@ public class GameState extends GameStateTemplate{
 
     public void draw(Graphics g){
         g.setColor(Color.GREEN);
-        g.fillRect(0, 0, 750, 650);
+        g.fillRect(0, 0, 1050, 1050);
+        
         //g.setColor(Color.WHITE);
         //for (int i = 0; i<15; i++) g.drawLine(i*50, 0, i*50, 650);
         //for (int i = 0; i<13; i++) g.drawLine(0, i*50, 750, i*50);
-        for (int i = 1; i<=13; i++){
+        //need to swap x and y  for grid to graphics
+        for (int i = 1; i<=15; i++){
             for  (int j = 1; j<=15; j++){
-                if(grid[i][j]==2){
-                    g.drawImage(unbreakableSprite, (j-1)*50, (i-1)*50, null);
+                if(grid[i][j]==4){
+                    g.drawImage(unbreakableSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
                 }
-                else if (grid[i][j]==1){
-                    g.drawImage(breakableSprite, (j-1)*50, (i-1)*50, null);
+                else if (grid[i][j]==2){
+                    g.drawImage(breakableSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
                 }
             }
         }
         playerOne.draw(g);
         playerTwo.draw(g);
+        
     }
-
+    public static boolean check (int x, int y){
+        //need to swap x and y for graphics to grid
+        x=x^y;
+        y=y^x;
+        x=x^y;
+        int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+50)/GameWindow.tileSize, y2 = (y+50)/GameWindow.tileSize;
+        x1++; y1++; x2++; y2++;
+        //y1++; y2++;
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2);
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2+" "+grid[x1][y1]+" "+grid[x2][y2]);
+        int t = 1;
+        t*=grid[x1][y1];
+        t*=grid[x1][y2];
+        t*=grid[x2][y1];
+        t*=grid[x2][y2];
+        return t%2==1;
+    }
     public void keyPressed(int k){
         playerOne.keyPressed(k);
         playerTwo.keyPressed(k);
