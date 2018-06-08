@@ -19,7 +19,7 @@ public class Player {
         this.y = y;
         this.type = t;
         try {
-             sprite = ImageIO.read(new File(t==1?"player1.png":"player2.png"));
+             sprite = ImageIO.read(new File(t==1?"assets/player1.png":"assets/player2.png"));
         }
         catch(IOException e){}
     }
