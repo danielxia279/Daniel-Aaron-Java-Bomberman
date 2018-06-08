@@ -14,7 +14,7 @@ public class GameState extends GameStateTemplate{
 
     private Player playerOne, playerTwo;
     private Tile[] t;
-    private BufferedImage unbreakableSprite;
+    private BufferedImage unbreakableSprite, breakableSprite;
     private static int [][] grid = new int[16][14]; //0 = nothing, 1 = breakable, 2 = unbreakable
 
     public static boolean collision(Point p, Tile t){
@@ -29,7 +29,8 @@ public class GameState extends GameStateTemplate{
         playerOne = new Player(0, 0, 1);
         playerTwo = new Player(500, 500, 2);
         try{
-            unbreakableSprite = ImageIO.read(new File("unbreakable.jpg"));
+            unbreakableSprite = ImageIO.read(new File("unbreakable.png"));
+            breakableSprite = ImageIO.read(new File("breakable.png"));
         }
         catch(IOException e){
             
@@ -49,7 +50,12 @@ public class GameState extends GameStateTemplate{
             System.out.println();
         }
         grid[12][2]=0;
+        grid[11][2]=0;
+        grid[12][3]=0;
         grid[2][14]=0;
+        grid[3][14]=0;
+        grid[2][13]=0;
+
         
     }
 
@@ -59,16 +65,23 @@ public class GameState extends GameStateTemplate{
     }
 
     public void draw(Graphics g){
-        playerOne.draw(g);
-        playerTwo.draw(g);
-        g.drawImage(unbreakableSprite, 0, 0, null);
+        g.setColor(Color.GREEN);
+        g.fillRect(0, 0, 750, 650);
+        //g.setColor(Color.WHITE);
+        //for (int i = 0; i<15; i++) g.drawLine(i*50, 0, i*50, 650);
+        //for (int i = 0; i<13; i++) g.drawLine(0, i*50, 750, i*50);
         for (int i = 1; i<=13; i++){
             for  (int j = 1; j<=15; j++){
                 if(grid[i][j]==2){
                     g.drawImage(unbreakableSprite, (j-1)*50, (i-1)*50, null);
                 }
+                else if (grid[i][j]==1){
+                    g.drawImage(breakableSprite, (j-1)*50, (i-1)*50, null);
+                }
             }
         }
+        playerOne.draw(g);
+        playerTwo.draw(g);
     }
 
     public void keyPressed(int k){
