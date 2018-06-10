@@ -1,0 +1,36 @@
+package game;
+
+import java.awt.*;
+
+public class Tile{
+
+    public int type;
+    public int fuseLength; //Miliseconds
+
+    public double BombStartTime;
+    public boolean isBomb = false;
+    public int bombRadius;
+    public int whoPlaced;
+
+    public boolean isFire;
+    public double FireStartTime;
+
+    public boolean horizontal, vertical, initial; //Purely for the sprites
+
+    public Tile(int type) {
+        this.type = type;
+    }
+
+    public void startBombTimer(){
+        this.BombStartTime = System.nanoTime();
+    }
+
+    public void startFire(){
+        this.isFire = true;
+        this.FireStartTime = System.nanoTime();
+    }
+
+
+
+}
+
