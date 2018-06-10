@@ -41,7 +41,7 @@ public class Player{
             moveDown(velocity);
         }
         if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire && type == 1) GameState.winner = 2;
-        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire && type == 1) GameState.winner = 1;
+        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire && type == 2) GameState.winner = 1;
 
     }
 
