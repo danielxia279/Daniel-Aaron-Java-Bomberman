@@ -7,19 +7,22 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class Player {
+public class Player{
 
     private boolean right = false, left = false, up = false, down = false;
     private int x, y, velocity = 4;
     private int size = 35, type;
     private BufferedImage sprite;
-    
+    private int bombRadius = 3, fuseLength = 3000; // milliseconds
+
+    public int bombCount = 1;
+
     public Player(int x, int y, int t) {
         this.x = x;
         this.y = y;
         this.type = t;
         try {
-             sprite = ImageIO.read(new File(t==1?"assets/player1.png":"assets/player2.png"));
+            sprite = ImageIO.read(new File(t==1?"assets/player1.png":"assets/player2.png"));
         }
         catch(IOException e){}
     }
@@ -37,7 +40,11 @@ public class Player {
         if(down){
             moveDown(velocity);
         }
+        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire && type == 1) GameState.winner = 2;
+        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire && type == 1) GameState.winner = 1;
+
     }
+
     private void moveRight(int n){
         while(n-->0&&GameState.check(x+1, y)){
             x++;
@@ -58,12 +65,9 @@ public class Player {
             y++;
         }
     }
-    
+
     public void draw(Graphics g){
-        /*if (type==1) g.setColor(Color.RED);
-        else  g.setColor(Color.BLUE);
-        g.fillRect((int)x, (int)y, size, size);*/
-        g.drawImage(sprite, (int)x, (int)y, null);
+        g.drawImage(sprite, x, y, null);
     }
 
     public void keyPressed(int k){
@@ -71,10 +75,26 @@ public class Player {
         if(k == KeyEvent.VK_A&&type==1) left = true;
         if(k == KeyEvent.VK_W&&type==1) up = true;
         if(k == KeyEvent.VK_S&&type==1) down = true;
+        if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].isBomb){
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isBomb = true;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].startBombTimer();
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].bombRadius = this.bombRadius;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].fuseLength = this.fuseLength;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].whoPlaced = 1;
+            bombCount--;
+        }
         if(k == KeyEvent.VK_L&&type==2) right = true;
         if(k == KeyEvent.VK_J&&type==2) left = true;
         if(k == KeyEvent.VK_I&&type==2) up = true;
         if(k == KeyEvent.VK_K&&type==2) down = true;
+        if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].isBomb){
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isBomb = true;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].startBombTimer();
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].bombRadius = this.bombRadius;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].fuseLength = this.fuseLength;
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].whoPlaced = 2;
+            bombCount--;
+        }
     }
 
     public void keyReleased(int k){
