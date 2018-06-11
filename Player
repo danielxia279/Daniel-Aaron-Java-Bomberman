@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 public class Player{
 
-    private boolean right, left, up, down;
+    private boolean right, left, up, down, canKick = true;
     public int x, y, velocity = 6;
     public boolean canKick, powerBomb, line;
     private int size = 35, type;
@@ -48,25 +48,52 @@ public class Player{
         }
 
     }
-
-    private void moveRight(int n){
+private void moveRight(int n){
         while(n-->0&&GameState.check(x+1, y)){
             x++;
+            if (x/70==(x+50)/70)continue;
+            if (!canKick) continue;
+            int x1 = (x+50)/70+1;
+            int y1 = (y+25)/70+1;
+            for (int i = 0; i<GameState.b.size(); i++){
+                if (GameState.b.get(i).x/70+1==x1&&GameState.b.get(i).y/70+1==y1) GameState.b.get(i).right=true;
+            }
         }
     }
     private void moveLeft(int n){
         while(n-->0&&GameState.check(x-1, y)){
             x--;
+            if (x/70==(x+50)/70)continue;
+            if (!canKick) continue;
+            int x1 = (x)/70+1;
+            int y1 = (y+25)/70+1;
+            for (int i = 0; i<GameState.b.size(); i++){
+                if (GameState.b.get(i).x/70+1==x1&&GameState.b.get(i).y/70+1==y1) GameState.b.get(i).left=true;
+            }
         }
     }
     private void moveUp(int n){
         while(n-->0&&GameState.check(x, y-1)){
             y--;
+            if (y/70==(y+50)/70)continue;
+            if (!canKick) continue;
+            int x1 = (x+25)/70+1;
+            int y1 = (y)/70+1;
+            for (int i = 0; i<GameState.b.size(); i++){
+                if (GameState.b.get(i).x/70+1==x1&&GameState.b.get(i).y/70+1==y1) GameState.b.get(i).up=true;
+            }
         }
     }
     private void moveDown(int n){
         while(n-->0&&GameState.check(x, y+1)){
             y++;
+            if (y/70==(y+50)/70)continue;
+            if (!canKick) continue;
+            int x1 = (x+25)/70+1;
+            int y1 = (y+50)/70+1;
+            for (int i = 0; i<GameState.b.size(); i++){
+                if (GameState.b.get(i).x/70+1==x1&&GameState.b.get(i).y/70+1==y1) GameState.b.get(i).down=true;
+            }
         }
     }
 
