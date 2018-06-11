@@ -9,11 +9,12 @@ import javax.imageio.ImageIO;
 
 public class Player{
 
-    private boolean right = false, left = false, up = false, down = false;
-    private int x, y, velocity = 6;
+    private boolean right, left, up, down;
+    public int x, y, velocity = 6;
+    public boolean canKick, powerBomb, line;
     private int size = 35, type;
     private BufferedImage sprite;
-    private int bombRadius = 3, fuseLength = 1000; // milliseconds
+    public int bombRadius = 2, fuseLength = 1000; // milliseconds
 
     public int bombCount = 1;
 
@@ -41,6 +42,10 @@ public class Player{
             moveDown(velocity);
         }
         if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire) GameState.winner = type==1?2:1;
+        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup != 0){
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].power(this);
+            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup = 0;
+        }
 
     }
 
@@ -75,7 +80,7 @@ public class Player{
         if(k == KeyEvent.VK_W&&type==1) up = true;
         if(k == KeyEvent.VK_S&&type==1) down = true;
         if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            GameState.b.add(new Bomb(fuseLength, bombRadius, 1, (x/70)*70, (y/70)*70));
+            GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, (x/70)*70, (y/70)*70));
             bombCount--;
         }
         if(k == KeyEvent.VK_L&&type==2) right = true;
@@ -83,7 +88,7 @@ public class Player{
         if(k == KeyEvent.VK_I&&type==2) up = true;
         if(k == KeyEvent.VK_K&&type==2) down = true;
         if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            GameState.b.add(new Bomb(fuseLength, bombRadius, 2, (x/70)*70, (y/70)*70));
+            GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, (x/70)*70, (y/70)*70));
             bombCount--;
         }
     }
@@ -98,4 +103,5 @@ public class Player{
         if(k == KeyEvent.VK_I&&type==2) up = false;
         if(k == KeyEvent.VK_K&&type==2) down = false;
     }
+
 }
