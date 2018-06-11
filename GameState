@@ -162,6 +162,8 @@ public class GameState extends GameStateTemplate{
         if(distance == 0 || grid[x][y].type == 4) return;
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
+            grid[x][y].startFire();
+            grid[x][y].vertical=true;
             return;
         }
         grid[x][y].startFire();
@@ -173,6 +175,8 @@ public class GameState extends GameStateTemplate{
         if(distance == 0 || grid[x][y].type == 4) return;
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
+            grid[x][y].startFire();
+            grid[x][y].vertical=true;
             return;
         }
         grid[x][y].startFire();
@@ -184,6 +188,8 @@ public class GameState extends GameStateTemplate{
         if(distance == 0 || grid[x][y].type == 4) return;
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
+            grid[x][y].startFire();
+            grid[x][y].horizontal=true;
             return;
         }
         grid[x][y].startFire();
@@ -195,6 +201,8 @@ public class GameState extends GameStateTemplate{
         if(distance == 0 || grid[x][y].type == 4) return;
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
+            grid[x][y].startFire();
+            grid[x][y].horizontal=true;
             return;
         }
         grid[x][y].startFire();
