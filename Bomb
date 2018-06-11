@@ -1,0 +1,40 @@
+package game;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+public class Bomb {
+
+    private BufferedImage sprite;
+
+    public int x, y;
+
+    public int fuseLength;
+    public double BombStartTime;
+    public int bombRadius;
+    public int whoPlaced;
+
+    public Bomb(int fuseLength, int bombRadius, int whoPlaced, int x, int y){
+        this.fuseLength = fuseLength;
+        this.BombStartTime = System.nanoTime();
+        this.bombRadius = bombRadius;
+        this.whoPlaced = whoPlaced;
+        this.x = x;
+        this.y = y;
+        try {
+            sprite = ImageIO.read(new File("assets/bomb.png"));
+        }
+        catch(IOException e){}
+    }
+
+    public void tick(){
+        GameState.grid[y/70+1][x/70+1].occupied = true;
+    }
+
+    public void draw(Graphics g){
+        g.drawImage(sprite, x, y, null);
+    }
+}
