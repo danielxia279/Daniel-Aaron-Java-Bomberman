@@ -97,6 +97,8 @@ public class GameState extends GameStateTemplate{
                 initialBlast(bombList.get(i).bombRadius, bombList.get(i).y / 70 + 1, bombList.get(i).x / 70 + 1);
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
                 bombList.remove(i);
             }
         }
