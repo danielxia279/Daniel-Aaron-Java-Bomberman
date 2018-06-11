@@ -5,6 +5,8 @@ public class Tile{
     public int type;
     public boolean occupied = false;
 
+    public int powerup = 0;
+
     public boolean isFire;
     public double FireStartTime;
 
@@ -17,6 +19,25 @@ public class Tile{
     public void startFire(){
         this.isFire = true;
         this.FireStartTime = System.nanoTime();
+    }
+
+    /*
+    1 = increase blast radius by 1
+    2 = increase max bomb count by 1
+    3 = move faster
+    4 = First bomb's blast radius is entire map
+    5 = can kick bombs
+    6 = increases blast radius to 5
+    7 = places bombs in a line in front of the player
+     */
+    public void power(Player player){
+        if(powerup == 1) player.bombRadius++;
+        else if(powerup == 2) player.bombCount++;
+        else if(powerup == 3) player.velocity++;
+        else if(powerup == 4) player.powerBomb = true;
+        else if(powerup == 5) player.canKick = true;
+        else if(powerup == 6) player.bombRadius = 6;
+        else if(powerup == 7) player.line = true;
     }
 
 
