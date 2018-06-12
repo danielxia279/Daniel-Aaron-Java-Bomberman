@@ -140,10 +140,10 @@ public class GameState extends GameStateTemplate{
                     g.drawImage(skateSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
                 }
                 if(grid[i][j].powerup == 4){
-                    g.drawImage(BombUpSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
+                    g.drawImage(powerBombSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
                 }
                 if(grid[i][j].powerup == 5){
-                    g.drawImage(powerBombSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
+                    g.drawImage(bombKickSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
                 }
                 if(grid[i][j].powerup == 7){
                     g.drawImage(lineBombSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
