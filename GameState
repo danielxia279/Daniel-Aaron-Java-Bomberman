@@ -94,11 +94,12 @@ public class GameState extends GameStateTemplate{
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).tick();
             if((System.nanoTime() - bombList.get(i).BombStartTime) / 1000000 >= bombList.get(i).fuseLength){
-                initialBlast(bombList.get(i).bombRadius, bombList.get(i).y / 70 + 1, bombList.get(i).x / 70 + 1);
+                int r = bombList.get(i).bombRadius, x = bombList.get(i).y / 70 + 1, y = bombList.get(i).x / 70 + 1;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
+                initialBlast(r, x, y);
             }
         }
 
@@ -187,6 +188,16 @@ public class GameState extends GameStateTemplate{
     private void initialBlast(int radius, int x, int y){
         grid[x][y].startFire();
         grid[x][y].initial = true; //Purely for the sprites
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1);
+            }
+        }
         blastUp(radius - 1, x - 1, y);
         blastDown(radius - 1, x + 1, y);
         blastLeft(radius - 1, x, y - 1);
@@ -195,6 +206,16 @@ public class GameState extends GameStateTemplate{
 
     private void blastUp(int distance, int x, int y){
         if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1);
+            }
+        }
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
@@ -207,6 +228,16 @@ public class GameState extends GameStateTemplate{
 
     private void blastDown(int distance, int x, int y){
         if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1);
+            }
+        }
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
@@ -219,6 +250,16 @@ public class GameState extends GameStateTemplate{
 
     private void blastLeft(int distance, int x, int y){
         if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1);
+            }
+        }
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
@@ -231,6 +272,16 @@ public class GameState extends GameStateTemplate{
 
     private void blastRight(int distance, int x, int y){
         if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1);
+            }
+        }
         if(grid[x][y].type == 2){
             grid[x][y].type = 1;
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
