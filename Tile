@@ -120,11 +120,11 @@ public class Tile{
     public void power(Player player){
         if(powerup == 1) player.bombRadius++;
         else if(powerup == 2) player.bombCount++;
-        else if(powerup == 3) player.velocity++;
+        else if(powerup == 3) player.speed++;
         else if(powerup == 4) player.powerBomb++;
         else if(powerup == 5) player.canKick = true;
         else if(powerup == 6) player.canPierce = true;
-        else if(powerup == 7) player.line = true;
+        else if(powerup == 7) player.lineBomb++;
     }
 
     public void tick(){
