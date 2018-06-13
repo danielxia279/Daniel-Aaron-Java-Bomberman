@@ -145,6 +145,10 @@ public class Player{
         if(k == KeyEvent.VK_I&&type==2) up = true;
         if(k == KeyEvent.VK_K&&type==2) down = true;
         if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
+            if(powerBomb>0){
+                GameState.bombList.add(new Bomb(fuseLength, 15, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+                powerBomb--;
+            }
             GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
             bombCount--;
         }
