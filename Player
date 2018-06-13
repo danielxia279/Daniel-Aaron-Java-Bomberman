@@ -12,10 +12,10 @@ public class Player{
     private boolean right, left, up, down;
     public int x, y, velocity = 4, powerBomb=0;
     public int direction; // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick, line, canPierce=true;
+    public boolean canKick, line, canPierce;
     private int size = 50, type;
     private BufferedImage sprite;
-    public int bombRadius = 4, fuseLength = 2200; // milliseconds
+    public int bombRadius = 2, fuseLength = 2200; // milliseconds
 
     public int bombCount = 1;
 
