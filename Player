@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 public class Player{
 
     private boolean right, left, up, down;
-    public int x, y, speed = 4, powerBomb=0, lineBomb=5;
+    public int x, y, speed = 4, powerBomb=0, lineBomb=0;
     private int startWalkingx, startWalkingy;
     public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
     public boolean canKick, canPierce;
@@ -44,6 +44,7 @@ public class Player{
         catch(IOException e){}
     }
     public void tick(){
+        if  (type==1) System.out.println(bombCount);
         if(right){
             moveRight(speed);
         }
@@ -69,8 +70,8 @@ public class Player{
         System.out.println(x1+" "+y1);
         if (GameState.grid[x1][y1].type!=1) return;
         if (!GameState.grid[x1][y1].occupied){
-            if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, 1, (y1-1)*70, (x1-1)*70, canPierce));
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, (y1-1)*70, (x1-1)*70, canPierce));
+            if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, type, (y1-1)*70, (x1-1)*70, canPierce));
+            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, type, (y1-1)*70, (x1-1)*70, canPierce));
         }
         if (direction.get(direction.size()-1)==1) lineBomb(x1-1, y1);
         if (direction.get(direction.size()-1)==2) lineBomb(x1, y1+1);
@@ -236,10 +237,10 @@ public class Player{
                 lineBomb--;
             }
             else if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+                GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
                 powerBomb--;
             }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
             bombCount--;
         }
         if(k == KeyEvent.VK_L&&type==2){
@@ -269,6 +270,12 @@ public class Player{
         if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
             if(lineBomb>0){
                 lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
+                if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
+                if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
+                if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
+                if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
+                if (powerBomb>0) powerBomb--;
+                lineBomb--;
             }
             else if(powerBomb>0){
                 GameState.bombList.add(new Bomb(fuseLength, 15, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
