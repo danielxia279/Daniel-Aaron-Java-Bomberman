@@ -11,13 +11,13 @@ import javax.sound.sampled.Clip;
 
 public class Bomb {
 
-    private BufferedImage sprite;
+    private BufferedImage sprite1, sprite2, sprite3, sprite4;
 
     public int x, y;
     public boolean left, right, up, down;
     public int velocity = 5;
     public int fuseLength;
-    public double BombStartTime;
+    public double BombStartTime; //nanoseconds
     public int bombRadius;
     public int whoPlaced;
 
@@ -29,7 +29,10 @@ public class Bomb {
         this.x = x;
         this.y = y;
         try {
-            sprite = ImageIO.read(new File("assets/bomb.png"));
+            sprite1 = ImageIO.read(new File("assets/bomb1.png"));
+            sprite2 = ImageIO.read(new File("assets/bomb2.png"));
+            sprite3 = ImageIO.read(new File("assets/bomb3.png"));
+            sprite4 = ImageIO.read(new File("assets/bomb4.png"));
         }
         catch(IOException e){}
     }
@@ -59,7 +62,10 @@ public class Bomb {
         catch(Exception e){}
     }
     public void draw(Graphics g){
-        g.drawImage(sprite, x, y, null);
+        if((System.nanoTime() - BombStartTime) % 1000000000 < 400000000) g.drawImage(sprite1, x, y, null);
+        else if((System.nanoTime() - BombStartTime) % 1000000000 < 600000000) g.drawImage(sprite2, x, y, null);
+        else if((System.nanoTime() - BombStartTime) % 1000000000 < 800000000) g.drawImage(sprite3, x, y, null);
+        else if((System.nanoTime() - BombStartTime) % 1000000000 < 1000000000) g.drawImage(sprite4, x, y, null);
     }
     private void moveRight(int n){
         while(n-->0&&GameState.check(x+1, y)){
