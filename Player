@@ -12,10 +12,10 @@ import java.lang.Math;
 public class Player{
 
     private boolean right, left, up, down;
-    public int x, y, velocity = 4;
+    public int x, y, velocity = 4, powerBomb, lineBomb;
     private int startWalkingx, startWalkingy;
     public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick, powerBomb, line;
+    public boolean canKick;
     private int size = 50, type;
     private BufferedImage red_up1, red_up2, red_up3, red_right1, red_right2, red_right3,
                                  red_down1, red_down2, red_down3, red_left1, red_left2, red_left3;
@@ -68,52 +68,87 @@ public class Player{
         }
         if(type == 1)System.out.println(direction);
 
+    }private void lineBomb (int x1, int y1){
+        System.out.println(x1+" "+y1);
+        if (GameState.grid[x1][y1].type!=1) return;
+        if (!GameState.grid[x1][y1].occupied){
+            if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, 1, (y1-1)*70, (x1-1)*70, canPierce));
+            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, (y1-1)*70, (x1-1)*70, canPierce));
+        }
+        if (type==1) lineBomb(x1-1, y1);
+        if (type==2) lineBomb(x1, y1+1);
+        if (type==3) lineBomb(x1+1, y1);
+        if (type==4) lineBomb(x1, y1-1);
+    }
+    private static boolean intersects (int p1, int p2){
+        return (Math.abs(p2-p1)<=50);
     }
     private void moveRight(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+            if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
+                if (canKick) GameState.bombList.get(i).right=true;
+                return;
+            }
+        }
         while(n-->0&&GameState.check(x+1, y)){
             x++;
-            if (x/70==(x+50)/70)continue;
-            if (!canKick) continue;
-            int x1 = (x+50)/70+1;
-            int y1 = (y+25)/70+1;
             for (int i = 0; i<GameState.bombList.size(); i++){
-                if (GameState.bombList.get(i).x/70+1==x1&&GameState.bombList.get(i).y/70+1==y1) GameState.bombList.get(i).right=true;
+                if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
+                    if (canKick) GameState.bombList.get(i).right=true;
+                    return;
+                }
             }
         }
     }
     private void moveLeft(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
+                    if (canKick) GameState.bombList.get(i).left=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x-1, y)){
             x--;
-            if (x/70==(x+50)/70)continue;
-            if (!canKick) continue;
-            int x1 = (x)/70+1;
-            int y1 = (y+25)/70+1;
             for (int i = 0; i<GameState.bombList.size(); i++){
-                if (GameState.bombList.get(i).x/70+1==x1&&GameState.bombList.get(i).y/70+1==y1) GameState.bombList.get(i).left=true;
+                if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
+                    if (canKick) GameState.bombList.get(i).left=true;
+                    return;
+                }
             }
         }
     }
     private void moveUp(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).up=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x, y-1)){
             y--;
-            if (y/70==(y+50)/70)continue;
-            if (!canKick) continue;
-            int x1 = (x+25)/70+1;
-            int y1 = (y)/70+1;
             for (int i = 0; i<GameState.bombList.size(); i++){
-                if (GameState.bombList.get(i).x/70+1==x1&&GameState.bombList.get(i).y/70+1==y1) GameState.bombList.get(i).up=true;
+                if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).up=true;
+                    return;
+                }
             }
+            
         }
     }
     private void moveDown(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).down=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x, y+1)){
             y++;
-            if (y/70==(y+50)/70)continue;
-            if (!canKick) continue;
-            int x1 = (x+25)/70+1;
-            int y1 = (y+50)/70+1;
             for (int i = 0; i<GameState.bombList.size(); i++){
-                if (GameState.bombList.get(i).x/70+1==x1&&GameState.bombList.get(i).y/70+1==y1) GameState.bombList.get(i).down=true;
+                if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).down=true;
+                    return;
+                }
             }
         }
     }
