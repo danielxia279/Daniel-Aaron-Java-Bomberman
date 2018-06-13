@@ -2,10 +2,7 @@ package game;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+
 import java.util.*;
 
 /*
@@ -17,7 +14,6 @@ public class GameState extends GameStateTemplate{
     private Player playerOne, playerTwo;
     private Random rand = new Random();
     public static ArrayList<Bomb> bombList;
-    private BufferedImage unbreakableSprite, breakableSprite, bombSprite, initialSprite, verticalSprite, horizontalSprite, BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite,  skateSprite;
     public static Tile [][] grid = new Tile[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
     public static int winner = 0;
     Color background = new Color((float)0.207, (float)0.439, (float)0.2);
@@ -28,46 +24,30 @@ public class GameState extends GameStateTemplate{
 
     public void init(){
         winner = 0;
+        Tile.init();
         playerOne = new Player(80, 920, 1);
         playerTwo = new Player(920, 80, 2);
         bombList = new ArrayList<>();
-        try{
-            initialSprite = ImageIO.read(new File("assets/initial.png"));
-            verticalSprite = ImageIO.read(new File("assets/vertical.png"));
-            horizontalSprite = ImageIO.read(new File("assets/horizontal.png"));
-            bombSprite = ImageIO.read(new File("assets/bomb.png"));
-            unbreakableSprite = ImageIO.read(new File("assets/unbreakable.png"));
-            breakableSprite = ImageIO.read(new File("assets/breakable.png"));
-            BombUpSprite = ImageIO.read(new File("assets/BombUp.png"));
-            bombKickSprite = ImageIO.read(new File("assets/bombKick.png"));
-            fireSprite = ImageIO.read(new File("assets/fire.png"));
-            lineBombSprite = ImageIO.read(new File("assets/lineBomb.png"));
-            powerBombSprite = ImageIO.read(new File("assets/powerBomb.png"));
-            skateSprite = ImageIO.read(new File("assets/skate.png"));
 
-        }
-        catch(IOException e){
-
-        }
         grid = new Tile[16][16];
         for (int i = 1; i <=15; i++){
             for (int j = 1; j <=15; j++){
                 if (i == 1||j == 1||i == 15||j == 15||(i%2 == 1 && j%2 == 1)){
-                    grid[i][j]= new Tile(4);
+                    grid[i][j]= new Tile(4, (j-1)*70, (i-1)*70);
                 }
                 else{
                     int n = (int)Math.ceil(Math.random()*5);
-                    grid[i][j]= new Tile(n==1?1:2);
+                    grid[i][j]= new Tile(n==1?1:2, (j-1)*70, (i-1)*70);
                 }
             }
         }
-        grid[14][2]= new Tile(1);
-        grid[13][2]= new Tile(1);
-        grid[14][3]= new Tile(1);
-        grid[2][14]= new Tile(1);
-        grid[2][13]= new Tile(1);
-        grid[3][14]= new Tile(1);
-            for (int i = 1; i<= 15; i++){
+        grid[14][2]= new Tile(1, 70, 910);
+        grid[13][2]= new Tile(1, 70, 840);
+        grid[14][3]= new Tile(1, 140, 910);
+        grid[2][14]= new Tile(1, 910, 70);
+        grid[2][13]= new Tile(1, 840, 70);
+        grid[3][14]= new Tile(1, 910, 140);
+        for (int i = 1; i<= 15; i++){
             for (int j = 1; j<=15; j++){
                 System.out.print(grid[i][j].type+" ");
             }
@@ -81,13 +61,7 @@ public class GameState extends GameStateTemplate{
 
         for(int i = 1; i <= 15; i++){
             for(int j = 1; j <= 15; j++){
-                grid[i][j].occupied = false;
-                if(grid[i][j].isFire && (System.nanoTime() - grid[i][j].FireStartTime) / 1000000 >= 500){
-                    grid[i][j].isFire = false;
-                    grid[i][j].initial = false;
-                    grid[i][j].horizontal = false;
-                    grid[i][j].vertical = false;
-                }
+                grid[i][j].tick();
             }
         }
 
@@ -110,45 +84,9 @@ public class GameState extends GameStateTemplate{
         g.setColor(background);
         g.fillRect(0, 0, 1050, 1050);
 
-        //g.setColor(Color.WHITE);
-        //for (int i = 0; i<15; i++) g.drawLine(i*50, 0, i*50, 650);
-        //for (int i = 0; i<13; i++) g.drawLine(0, i*50, 750, i*50);
-        //need to swap x and y  for grid to graphics
         for (int i = 1; i<=15; i++){
             for  (int j = 1; j<=15; j++){
-                if(grid[i][j].type==4){
-                    g.drawImage(unbreakableSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                else if (grid[i][j].type==2){
-                    g.drawImage(breakableSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].initial){
-                    g.drawImage(initialSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                else if(grid[i][j].vertical){
-                    g.drawImage(verticalSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                else if(grid[i][j].horizontal){
-                    g.drawImage(horizontalSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 1){
-                    g.drawImage(fireSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 2){
-                    g.drawImage(BombUpSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 3){
-                    g.drawImage(skateSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 4){
-                    g.drawImage(powerBombSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 5){
-                    g.drawImage(bombKickSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
-                if(grid[i][j].powerup == 7){
-                    g.drawImage(lineBombSprite, (j-1)*GameWindow.tileSize, (i-1)*GameWindow.tileSize, null);
-                }
+                grid[i][j].draw(g);
             }
         }
         playerOne.draw(g);
@@ -157,6 +95,7 @@ public class GameState extends GameStateTemplate{
             bombList.get(i).draw(g);
         }
     }
+
     public static boolean check (int x, int y){
         //need to swap x and y for graphics to grid
         x=x^y;
@@ -186,7 +125,7 @@ public class GameState extends GameStateTemplate{
     }
 
     private void initialBlast(int radius, int x, int y){
-        grid[x][y].startFire();
+        grid[x][y].startFire(false);
         grid[x][y].initial = true; //Purely for the sprites
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
@@ -221,8 +160,9 @@ public class GameState extends GameStateTemplate{
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        grid[x][y].startFire();
-        grid[x][y].vertical = true; //Purely for the sprites
+        if(distance == 1) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].up = true; //Purely for the sprites
         blastUp(distance - 1, x - 1, y);
     }
 
@@ -243,8 +183,9 @@ public class GameState extends GameStateTemplate{
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        grid[x][y].startFire();
-        grid[x][y].vertical = true; //Purely for the sprites
+        if(distance == 1) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].down = true; //Purely for the sprites
         blastDown(distance - 1, x + 1, y);
     }
 
@@ -265,8 +206,9 @@ public class GameState extends GameStateTemplate{
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        grid[x][y].startFire();
-        grid[x][y].horizontal = true; //Purely for the sprites
+        if(distance == 1) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].left = true; //Purely for the sprites
         blastLeft(distance - 1, x, y - 1);
     }
 
@@ -287,8 +229,9 @@ public class GameState extends GameStateTemplate{
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        grid[x][y].startFire();
-        grid[x][y].horizontal = true; //Purely for the sprites
+        if(distance == 1) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].right = true; //Purely for the sprites
         blastRight(distance - 1, x, y + 1);
     }
 
