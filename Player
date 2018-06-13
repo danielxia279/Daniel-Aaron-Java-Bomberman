@@ -15,7 +15,7 @@ public class Player{
     public boolean canKick, powerBomb, line;
     private int size = 50, type;
     private BufferedImage sprite;
-    public int bombRadius = 2, fuseLength = 2200; // milliseconds
+    public int bombRadius = 2, fuseLength = 5000; // milliseconds
 
     public int bombCount = 1;
 
@@ -54,36 +54,51 @@ public class Player{
         return (Math.abs(p2-p1)<=50);
     }
     private void moveRight(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+            if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
+                if (canKick) GameState.bombList.get(i).right=true;
+                return;
+            }
+        }
         while(n-->0&&GameState.check(x+1, y)){
             x++;
             for (int i = 0; i<GameState.bombList.size(); i++){
                 if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
                     if (canKick) GameState.bombList.get(i).right=true;
-                    right = false;
                     return;
                 }
             }
         }
     }
     private void moveLeft(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
+                    if (canKick) GameState.bombList.get(i).left=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x-1, y)){
             x--;
             for (int i = 0; i<GameState.bombList.size(); i++){
                 if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
                     if (canKick) GameState.bombList.get(i).left=true;
-                    left = false;
                     return;
                 }
             }
         }
     }
     private void moveUp(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).up=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x, y-1)){
             y--;
             for (int i = 0; i<GameState.bombList.size(); i++){
                 if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
                     if (canKick) GameState.bombList.get(i).up=true;
-                    up = false;
                     return;
                 }
             }
@@ -91,12 +106,17 @@ public class Player{
         }
     }
     private void moveDown(int n){
+        for (int i = 0; i<GameState.bombList.size(); i++){
+                if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
+                    if (canKick) GameState.bombList.get(i).down=true;
+                    return;
+                }
+            }
         while(n-->0&&GameState.check(x, y+1)){
             y++;
             for (int i = 0; i<GameState.bombList.size(); i++){
                 if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
                     if (canKick) GameState.bombList.get(i).down=true;
-                    down = false;
                     return;
                 }
             }
