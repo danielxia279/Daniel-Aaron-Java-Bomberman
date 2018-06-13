@@ -21,7 +21,7 @@ public class Tile{
     public boolean isFire;
     public double FireStartTime;
 
-    private static BufferedImage unbreakableSprite, breakableSprite, initialSprite, verticalSprite, horizontalSprite,
+    private static BufferedImage unbreakableSprite, breakableSprite,
             BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite, skateSprite,
             breaking1, breaking2, breaking3, breaking4, breaking5, breaking6,
             up_edge1, up_edge2, up_edge3, up_edge4, up_edge5,
@@ -37,9 +37,6 @@ public class Tile{
 
     public static void init(){
         try {
-            initialSprite = ImageIO.read(new File("assets/initial.png"));
-            verticalSprite = ImageIO.read(new File("assets/vertical.png"));
-            horizontalSprite = ImageIO.read(new File("assets/horizontal.png"));
             unbreakableSprite = ImageIO.read(new File("assets/unbreakable.png"));
             breakableSprite = ImageIO.read(new File("assets/breakable.png"));
             BombUpSprite = ImageIO.read(new File("assets/BombUp.png"));
