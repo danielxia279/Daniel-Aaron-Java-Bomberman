@@ -22,7 +22,7 @@ public class Tile{
     public double FireStartTime;
 
     private static BufferedImage unbreakableSprite, breakableSprite,
-            BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite, skateSprite,
+            BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite, bombPierceSprite, skateSprite,
             breaking1, breaking2, breaking3, breaking4, breaking5, breaking6,
             up_edge1, up_edge2, up_edge3, up_edge4, up_edge5,
             right_edge1, right_edge2, right_edge3, right_edge4, right_edge5,
@@ -30,8 +30,7 @@ public class Tile{
             left_edge1, left_edge2, left_edge3, left_edge4, left_edge5,
             initial1, initial2, initial3, initial4, initial5,
             vertical1, vertical2, vertical3, vertical4, vertical5,
-            horizontal1, horizontal2, horizontal3, horizontal4, horizontal5
-    ;
+            horizontal1, horizontal2, horizontal3, horizontal4, horizontal5;
 
     public boolean up, right, down, left, initial, edge; //Purely for the sprites
 
@@ -42,6 +41,7 @@ public class Tile{
             BombUpSprite = ImageIO.read(new File("assets/BombUp.png"));
             bombKickSprite = ImageIO.read(new File("assets/bombKick.png"));
             fireSprite = ImageIO.read(new File("assets/fire.png"));
+            bombPierceSprite = ImageIO.read(new File("assets/bombPierce.png"));
             lineBombSprite = ImageIO.read(new File("assets/lineBomb.png"));
             powerBombSprite = ImageIO.read(new File("assets/powerBomb.png"));
             skateSprite = ImageIO.read(new File("assets/skate.png"));
@@ -114,16 +114,16 @@ public class Tile{
     3 = move faster
     4 = First bomb's blast radius is entire map
     5 = can kick bombs
-    6 = increases blast radius to 5
+    6 = allows bomb to pierce
     7 = places bombs in a line in front of the player
      */
     public void power(Player player){
         if(powerup == 1) player.bombRadius++;
         else if(powerup == 2) player.bombCount++;
         else if(powerup == 3) player.velocity++;
-        else if(powerup == 4) player.powerBomb = true;
+        else if(powerup == 4) player.powerBomb++;
         else if(powerup == 5) player.canKick = true;
-        else if(powerup == 6) player.bombRadius = 6;
+        else if(powerup == 6) player.canPierce = true;
         else if(powerup == 7) player.line = true;
     }
 
@@ -268,6 +268,9 @@ public class Tile{
         if(powerup == 5){
             g.drawImage(bombKickSprite, x, y, null);
         }
+        if(powerup == 6){
+            g.drawImage(bombPierceSprite, x, y, null);
+        }
         if(powerup == 7){
             g.drawImage(lineBombSprite, x, y, null);
         }
@@ -287,4 +290,3 @@ public class Tile{
         }
     }
 }
-
