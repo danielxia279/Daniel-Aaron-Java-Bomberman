@@ -14,20 +14,21 @@ public class Bomb {
     private BufferedImage sprite1, sprite2, sprite3, sprite4;
 
     public int x, y;
-    public boolean left, right, up, down;
+    public boolean left, right, up, down, canPierce;
     public int velocity = 5;
     public int fuseLength;
     public double BombStartTime; //nanoseconds
     public int bombRadius;
     public int whoPlaced;
 
-    public Bomb(int fuseLength, int bombRadius, int whoPlaced, int x, int y){
+    public Bomb(int fuseLength, int bombRadius, int whoPlaced, int x, int y, boolean canPierce){
         this.fuseLength = fuseLength;
         this.BombStartTime = System.nanoTime();
         this.bombRadius = bombRadius;
         this.whoPlaced = whoPlaced;
         this.x = x;
         this.y = y;
+        this.canPierce = canPierce;
         try {
             sprite1 = ImageIO.read(new File("assets/bomb1.png"));
             sprite2 = ImageIO.read(new File("assets/bomb2.png"));
