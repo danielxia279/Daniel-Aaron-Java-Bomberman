@@ -1,23 +1,101 @@
 package game;
 
+import java.awt.*;
+import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 public class Tile{
+
+    private int x, y;
 
     public int type;
     public boolean occupied = false;
+
+    public int breakingTime;
+    public boolean isBreaking;
 
     public int powerup = 0;
 
     public boolean isFire;
     public double FireStartTime;
 
-    public boolean horizontal, vertical, initial; //Purely for the sprites
+    private static BufferedImage unbreakableSprite, breakableSprite, initialSprite, verticalSprite, horizontalSprite,
+            BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite, skateSprite,
+            up_edge1, up_edge2, up_edge3, up_edge4, up_edge5,
+            right_edge1, right_edge2, right_edge3, right_edge4, right_edge5,
+            down_edge1, down_edge2, down_edge3, down_edge4, down_edge5,
+            left_edge1, left_edge2, left_edge3, left_edge4, left_edge5,
+            initial1, initial2, initial3, initial4, initial5,
+            vertical1, vertical2, vertical3, vertical4, vertical5,
+            horizontal1, horizontal2, horizontal3, horizontal4, horizontal5
+    ;
 
-    public Tile(int type) {
-        this.type = type;
+    public boolean up, right, down, left, initial, edge; //Purely for the sprites
+
+    public static void init(){
+        try {
+            initialSprite = ImageIO.read(new File("assets/initial.png"));
+            verticalSprite = ImageIO.read(new File("assets/vertical.png"));
+            horizontalSprite = ImageIO.read(new File("assets/horizontal.png"));
+            unbreakableSprite = ImageIO.read(new File("assets/unbreakable.png"));
+            breakableSprite = ImageIO.read(new File("assets/breakable.png"));
+            BombUpSprite = ImageIO.read(new File("assets/BombUp.png"));
+            bombKickSprite = ImageIO.read(new File("assets/bombKick.png"));
+            fireSprite = ImageIO.read(new File("assets/fire.png"));
+            lineBombSprite = ImageIO.read(new File("assets/lineBomb.png"));
+            powerBombSprite = ImageIO.read(new File("assets/powerBomb.png"));
+            skateSprite = ImageIO.read(new File("assets/skate.png"));
+            up_edge1 = ImageIO.read(new File("assets/up_edge1.png"));
+            up_edge2 = ImageIO.read(new File("assets/up_edge2.png"));
+            up_edge3 = ImageIO.read(new File("assets/up_edge3.png"));
+            up_edge4 = ImageIO.read(new File("assets/up_edge4.png"));
+            up_edge5 = ImageIO.read(new File("assets/up_edge5.png"));
+            right_edge1 = ImageIO.read(new File("assets/right_edge1.png"));
+            right_edge2 = ImageIO.read(new File("assets/right_edge2.png"));
+            right_edge3 = ImageIO.read(new File("assets/right_edge3.png"));
+            right_edge4 = ImageIO.read(new File("assets/right_edge4.png"));
+            right_edge5 = ImageIO.read(new File("assets/right_edge5.png"));
+            down_edge1 = ImageIO.read(new File("assets/down_edge1.png"));
+            down_edge2 = ImageIO.read(new File("assets/down_edge2.png"));
+            down_edge3 = ImageIO.read(new File("assets/down_edge3.png"));
+            down_edge4 = ImageIO.read(new File("assets/down_edge4.png"));
+            down_edge5 = ImageIO.read(new File("assets/down_edge5.png"));
+            left_edge1 = ImageIO.read(new File("assets/left_edge1.png"));
+            left_edge2 = ImageIO.read(new File("assets/left_edge2.png"));
+            left_edge3 = ImageIO.read(new File("assets/left_edge3.png"));
+            left_edge4 = ImageIO.read(new File("assets/left_edge4.png"));
+            left_edge5 = ImageIO.read(new File("assets/left_edge5.png"));
+            initial1 = ImageIO.read(new File("assets/initial1.png"));
+            initial2 = ImageIO.read(new File("assets/initial2.png"));
+            initial3 = ImageIO.read(new File("assets/initial3.png"));
+            initial4 = ImageIO.read(new File("assets/initial4.png"));
+            initial5 = ImageIO.read(new File("assets/initial5.png"));
+            vertical1 = ImageIO.read(new File("assets/vertical1.png"));
+            vertical2 = ImageIO.read(new File("assets/vertical2.png"));
+            vertical3 = ImageIO.read(new File("assets/vertical3.png"));
+            vertical4 = ImageIO.read(new File("assets/vertical4.png"));
+            vertical5 = ImageIO.read(new File("assets/vertical5.png"));
+            horizontal1 = ImageIO.read(new File("assets/horizontal1.png"));
+            horizontal2 = ImageIO.read(new File("assets/horizontal2.png"));
+            horizontal3 = ImageIO.read(new File("assets/horizontal3.png"));
+            horizontal4 = ImageIO.read(new File("assets/horizontal4.png"));
+            horizontal5 = ImageIO.read(new File("assets/horizontal5.png"));
+        }
+        catch(IOException e){}
     }
 
-    public void startFire(){
+    public Tile(int type, int x, int y) {
+        this.type = type;
+        this.x = x;
+        this.y = y;
+
+    }
+
+    public void startFire(boolean edge){
         this.isFire = true;
+        this.edge = edge;
         this.FireStartTime = System.nanoTime();
     }
 
@@ -40,7 +118,155 @@ public class Tile{
         else if(powerup == 7) player.line = true;
     }
 
+    public void tick(){
+        if(isBreaking && System.nanoTime() - breakingTime >= 500000000) type = 1;
+        occupied = false;
+        if(isFire && (System.nanoTime() - FireStartTime) / 1000000 >= 450){
+            isFire = false;
+            initial = false;
+            up = false;
+            right = false;
+            down = false;
+            left = false;
+            edge = false;
+        }
+    }
 
+    public void draw(Graphics g){
+        if(type==4){
+            g.drawImage(unbreakableSprite, x, y, null);
+        }
 
+        else if (isBreaking){
+        }
+        else if (type==2){
+            g.drawImage(breakableSprite, x, y, null);
+        }
+        else if(isFire){
+            if(System.nanoTime() - FireStartTime < 50000000 || System.nanoTime() - FireStartTime >= 400000000){
+                if(initial){
+                    g.drawImage(initial1, x, y, null);
+                }
+                else if(up){
+                    if(edge) g.drawImage(up_edge1, x, y, null);
+                    else g.drawImage(vertical1, x, y, null);
+                }
+                else if(down){
+                    if(edge) g.drawImage(down_edge1, x, y, null);
+                    else g.drawImage(vertical1, x, y, null);
+                }
+                else if(right){
+                    if(edge) g.drawImage(right_edge1, x, y, null);
+                    else g.drawImage(horizontal1, x, y, null);
+                }
+                else if(left){
+                    if(edge) g.drawImage(left_edge1, x, y, null);
+                    else g.drawImage(horizontal1, x, y, null);
+                }
+            }
+            else if(System.nanoTime() - FireStartTime < 100000000 || System.nanoTime() - FireStartTime >= 350000000){
+                if(initial){
+                    g.drawImage(initial2, x, y, null);
+                }
+                else if(up){
+                    if(edge) g.drawImage(up_edge2, x, y, null);
+                    else g.drawImage(vertical2, x, y, null);
+                }
+                else if(down){
+                    if(edge) g.drawImage(down_edge2, x, y, null);
+                    else g.drawImage(vertical2, x, y, null);
+                }
+                else if(right){
+                    if(edge) g.drawImage(right_edge2, x, y, null);
+                    else g.drawImage(horizontal2, x, y, null);
+                }
+                else if(left){
+                    if(edge) g.drawImage(left_edge2, x, y, null);
+                    else g.drawImage(horizontal2, x, y, null);
+                }
+            }
+            else if(System.nanoTime() - FireStartTime < 150000000 || System.nanoTime() - FireStartTime >= 300000000){
+                if(initial){
+                    g.drawImage(initial3, x, y, null);
+                }
+                else if(up){
+                    if(edge) g.drawImage(up_edge3, x, y, null);
+                    else g.drawImage(vertical3, x, y, null);
+                }
+                else if(down){
+                    if(edge) g.drawImage(down_edge3, x, y, null);
+                    else g.drawImage(vertical3, x, y, null);
+                }
+                else if(right){
+                    if(edge) g.drawImage(right_edge3, x, y, null);
+                    else g.drawImage(horizontal3, x, y, null);
+                }
+                else if(left){
+                    if(edge) g.drawImage(left_edge3, x, y, null);
+                    else g.drawImage(horizontal3, x, y, null);
+                }
+            }
+            else if(System.nanoTime() - FireStartTime < 200000000 || System.nanoTime() - FireStartTime >= 250000000){
+                if(initial){
+                    g.drawImage(initial4, x, y, null);
+                }
+                else if(up){
+                    if(edge) g.drawImage(up_edge4, x, y, null);
+                    else g.drawImage(vertical4, x, y, null);
+                }
+                else if(down){
+                    if(edge) g.drawImage(down_edge4, x, y, null);
+                    else g.drawImage(vertical4, x, y, null);
+                }
+                else if(right){
+                    if(edge) g.drawImage(right_edge4, x, y, null);
+                    else g.drawImage(horizontal4, x, y, null);
+                }
+                else if(left){
+                    if(edge) g.drawImage(left_edge4, x, y, null);
+                    else g.drawImage(horizontal4, x, y, null);
+                }
+            }
+            else if(System.nanoTime() - FireStartTime < 250000000){
+                if(initial){
+                    g.drawImage(initial5, x, y, null);
+                }
+                else if(up){
+                    if(edge) g.drawImage(up_edge5, x, y, null);
+                    else g.drawImage(vertical5, x, y, null);
+                }
+                else if(down){
+                    if(edge) g.drawImage(down_edge5, x, y, null);
+                    else g.drawImage(vertical5, x, y, null);
+                }
+                else if(right){
+                    if(edge) g.drawImage(right_edge5, x, y, null);
+                    else g.drawImage(horizontal5, x, y, null);
+                }
+                else if(left){
+                    if(edge) g.drawImage(left_edge5, x, y, null);
+                    else g.drawImage(horizontal5, x, y, null);
+                }
+            }
+        }
+        if(powerup == 1){
+            g.drawImage(fireSprite, x, y, null);
+        }
+        if(powerup == 2){
+            g.drawImage(BombUpSprite, x, y, null);
+        }
+        if(powerup == 3){
+            g.drawImage(skateSprite, x, y, null);
+        }
+        if(powerup == 4){
+            g.drawImage(powerBombSprite, x, y, null);
+        }
+        if(powerup == 5){
+            g.drawImage(bombKickSprite, x, y, null);
+        }
+        if(powerup == 7){
+            g.drawImage(lineBombSprite, x, y, null);
+        }
+    }
 }
 
