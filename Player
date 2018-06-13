@@ -10,12 +10,12 @@ import javax.imageio.ImageIO;
 public class Player{
 
     private boolean right, left, up, down;
-    public int x, y, velocity = 4;
+    public int x, y, velocity = 4, powerBomb=0;
     public int direction; // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick, powerBomb, line;
+    public boolean canKick,  line;
     private int size = 50, type;
     private BufferedImage sprite;
-    public int bombRadius = 2, fuseLength = 5000; // milliseconds
+    public int bombRadius = 2, fuseLength = 2200; // milliseconds
 
     public int bombCount = 1;
 
@@ -133,9 +133,9 @@ public class Player{
         if(k == KeyEvent.VK_W&&type==1) up = true;
         if(k == KeyEvent.VK_S&&type==1) down = true;
         if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            if(powerBomb){
+            if(powerBomb>0){
                 GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70));
-                powerBomb = false;
+                powerBomb--;
             }
             else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, ((x+25)/70)*70, ((y+25)/70)*70));
             bombCount--;
