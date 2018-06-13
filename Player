@@ -164,5 +164,4 @@ public class Player{
         if(k == KeyEvent.VK_I&&type==2) up = false;
         if(k == KeyEvent.VK_K&&type==2) down = false;
     }
-
 }
