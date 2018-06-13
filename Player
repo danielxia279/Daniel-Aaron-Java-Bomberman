@@ -12,10 +12,10 @@ public class Player{
     private boolean right, left, up, down;
     public int x, y, velocity = 4, powerBomb=0;
     public int direction; // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick,  line;
+    public boolean canKick, line, canPierce=true;
     private int size = 50, type;
     private BufferedImage sprite;
-    public int bombRadius = 2, fuseLength = 2200; // milliseconds
+    public int bombRadius = 4, fuseLength = 2200; // milliseconds
 
     public int bombCount = 1;
 
@@ -134,10 +134,10 @@ public class Player{
         if(k == KeyEvent.VK_S&&type==1) down = true;
         if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
             if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70));
+                GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
                 powerBomb--;
             }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, ((x+25)/70)*70, ((y+25)/70)*70));
+            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
             bombCount--;
         }
         if(k == KeyEvent.VK_L&&type==2) right = true;
@@ -145,7 +145,7 @@ public class Player{
         if(k == KeyEvent.VK_I&&type==2) up = true;
         if(k == KeyEvent.VK_K&&type==2) down = true;
         if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, ((x+25)/70)*70, ((y+25)/70)*70));
+            GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
             bombCount--;
         }
     }
