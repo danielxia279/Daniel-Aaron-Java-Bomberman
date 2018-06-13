@@ -156,11 +156,11 @@ public class GameState extends GameStateTemplate{
             }
         }
         if(grid[x][y].type == 2){
-            grid[x][y].type = 1;
+            grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        if(distance == 1) grid[x][y].startFire(true);
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].up = true; //Purely for the sprites
         blastUp(distance - 1, x - 1, y);
@@ -179,11 +179,11 @@ public class GameState extends GameStateTemplate{
             }
         }
         if(grid[x][y].type == 2){
-            grid[x][y].type = 1;
+            grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        if(distance == 1) grid[x][y].startFire(true);
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].down = true; //Purely for the sprites
         blastDown(distance - 1, x + 1, y);
@@ -202,11 +202,11 @@ public class GameState extends GameStateTemplate{
             }
         }
         if(grid[x][y].type == 2){
-            grid[x][y].type = 1;
+            grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        if(distance == 1) grid[x][y].startFire(true);
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].left = true; //Purely for the sprites
         blastLeft(distance - 1, x, y - 1);
@@ -225,11 +225,11 @@ public class GameState extends GameStateTemplate{
             }
         }
         if(grid[x][y].type == 2){
-            grid[x][y].type = 1;
+            grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             return;
         }
-        if(distance == 1) grid[x][y].startFire(true);
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].right = true; //Purely for the sprites
         blastRight(distance - 1, x, y + 1);
