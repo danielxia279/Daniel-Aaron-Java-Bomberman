@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 public class Player{
 
     private boolean right, left, up, down;
-    public int x, y, speed = 4, powerBomb=0, lineBomb=0;
+    public int x, y, speed = 4, powerBomb=5, lineBomb=5;
     private int startWalkingx, startWalkingy;
     public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
     public boolean canKick, canPierce;
@@ -69,6 +69,7 @@ public class Player{
     private void lineBomb (int x1, int y1){
         System.out.println(x1+" "+y1);
         if (GameState.grid[x1][y1].type!=1) return;
+        bombCount--;
         if (!GameState.grid[x1][y1].occupied){
             if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, type, (y1-1)*70, (x1-1)*70, canPierce));
             else GameState.bombList.add(new Bomb(fuseLength, bombRadius, type, (y1-1)*70, (x1-1)*70, canPierce));
@@ -235,6 +236,7 @@ public class Player{
                 if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
                 if (powerBomb>0) powerBomb--;
                 lineBomb--;
+                bombCount++;
             }
             else if(powerBomb>0){
                 GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
@@ -276,6 +278,7 @@ public class Player{
                 if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
                 if (powerBomb>0) powerBomb--;
                 lineBomb--;
+                bombCount++;
             }
             else if(powerBomb>0){
                 GameState.bombList.add(new Bomb(fuseLength, 15, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
