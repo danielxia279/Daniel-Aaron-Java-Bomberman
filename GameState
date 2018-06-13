@@ -90,11 +90,12 @@ public class GameState extends GameStateTemplate{
                 grid[i][j].draw(g);
             }
         }
-        playerOne.draw(g);
-        playerTwo.draw(g);
+        
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).draw(g);
         }
+        playerOne.draw(g);
+        playerTwo.draw(g);
     }
 
     public static boolean check (int x, int y){
