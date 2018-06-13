@@ -13,7 +13,7 @@ public class Tile{
     public int type;
     public boolean occupied = false;
 
-    public int breakingTime;
+    public double breakingStartTime;
     public boolean isBreaking;
 
     public int powerup = 0;
@@ -23,6 +23,7 @@ public class Tile{
 
     private static BufferedImage unbreakableSprite, breakableSprite, initialSprite, verticalSprite, horizontalSprite,
             BombUpSprite,  bombKickSprite, fireSprite, lineBombSprite, powerBombSprite, skateSprite,
+            breaking1, breaking2, breaking3, breaking4, breaking5, breaking6,
             up_edge1, up_edge2, up_edge3, up_edge4, up_edge5,
             right_edge1, right_edge2, right_edge3, right_edge4, right_edge5,
             down_edge1, down_edge2, down_edge3, down_edge4, down_edge5,
@@ -47,6 +48,12 @@ public class Tile{
             lineBombSprite = ImageIO.read(new File("assets/lineBomb.png"));
             powerBombSprite = ImageIO.read(new File("assets/powerBomb.png"));
             skateSprite = ImageIO.read(new File("assets/skate.png"));
+            breaking1 = ImageIO.read(new File("assets/breaking1.png"));
+            breaking2 = ImageIO.read(new File("assets/breaking2.png"));
+            breaking3 = ImageIO.read(new File("assets/breaking3.png"));
+            breaking4 = ImageIO.read(new File("assets/breaking4.png"));
+            breaking5 = ImageIO.read(new File("assets/breaking5.png"));
+            breaking6 = ImageIO.read(new File("assets/breaking6.png"));
             up_edge1 = ImageIO.read(new File("assets/up_edge1.png"));
             up_edge2 = ImageIO.read(new File("assets/up_edge2.png"));
             up_edge3 = ImageIO.read(new File("assets/up_edge3.png"));
@@ -99,6 +106,11 @@ public class Tile{
         this.FireStartTime = System.nanoTime();
     }
 
+    public void breaking(){
+        isBreaking = true;
+        breakingStartTime = System.nanoTime();
+    }
+
     /*
     1 = increase blast radius by 1
     2 = increase max bomb count by 1
@@ -119,8 +131,11 @@ public class Tile{
     }
 
     public void tick(){
-        if(isBreaking && System.nanoTime() - breakingTime >= 500000000) type = 1;
         occupied = false;
+        if(isBreaking && System.nanoTime() - breakingStartTime >= 450000000) {
+            type = 1;
+            isBreaking = false;
+        }
         if(isFire && (System.nanoTime() - FireStartTime) / 1000000 >= 450){
             isFire = false;
             initial = false;
@@ -133,16 +148,7 @@ public class Tile{
     }
 
     public void draw(Graphics g){
-        if(type==4){
-            g.drawImage(unbreakableSprite, x, y, null);
-        }
-
-        else if (isBreaking){
-        }
-        else if (type==2){
-            g.drawImage(breakableSprite, x, y, null);
-        }
-        else if(isFire){
+        if(isFire){
             if(System.nanoTime() - FireStartTime < 50000000 || System.nanoTime() - FireStartTime >= 400000000){
                 if(initial){
                     g.drawImage(initial1, x, y, null);
@@ -249,6 +255,7 @@ public class Tile{
                 }
             }
         }
+
         if(powerup == 1){
             g.drawImage(fireSprite, x, y, null);
         }
@@ -266,6 +273,20 @@ public class Tile{
         }
         if(powerup == 7){
             g.drawImage(lineBombSprite, x, y, null);
+        }
+        if(type==4){
+            g.drawImage(unbreakableSprite, x, y, null);
+        }
+        else if (isBreaking){
+            if(System.nanoTime() - breakingStartTime < 75000000) g.drawImage(breaking1, x, y, null);
+            else if(System.nanoTime() - breakingStartTime < 150000000) g.drawImage(breaking2, x, y, null);
+            else if(System.nanoTime() - breakingStartTime < 225000000) g.drawImage(breaking3, x, y, null);
+            else if(System.nanoTime() - breakingStartTime < 300000000) g.drawImage(breaking4, x, y, null);
+            else if(System.nanoTime() - breakingStartTime < 375000000) g.drawImage(breaking5, x, y, null);
+            else if(System.nanoTime() - breakingStartTime < 450000000) g.drawImage(breaking6, x, y, null);
+        }
+        else if (type==2){
+            g.drawImage(breakableSprite, x, y, null);
         }
     }
 }
