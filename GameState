@@ -69,11 +69,12 @@ public class GameState extends GameStateTemplate{
             bombList.get(i).tick();
             if((System.nanoTime() - bombList.get(i).BombStartTime) / 1000000 >= bombList.get(i).fuseLength){
                 int r = bombList.get(i).bombRadius, x = bombList.get(i).y / 70 + 1, y = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x, y);
+                initialBlast(r, x, y, p);
             }
         }
 
@@ -124,115 +125,120 @@ public class GameState extends GameStateTemplate{
         playerTwo.keyReleased(k);
     }
 
-    private void initialBlast(int radius, int x, int y){
+    private void initialBlast(int radius, int x, int y, boolean canPierce){
         grid[x][y].startFire(false);
         grid[x][y].initial = true; //Purely for the sprites
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
                 int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x1, y1);
+                initialBlast(r, x1, y1, p);
             }
         }
-        blastUp(radius - 1, x - 1, y);
-        blastDown(radius - 1, x + 1, y);
-        blastLeft(radius - 1, x, y - 1);
-        blastRight(radius - 1, x, y + 1);
+        blastUp(radius - 1, x - 1, y, canPierce);
+        blastDown(radius - 1, x + 1, y, canPierce);
+        blastLeft(radius - 1, x, y - 1, canPierce);
+        blastRight(radius - 1, x, y + 1, canPierce);
     }
 
-    private void blastUp(int distance, int x, int y){
+    private void blastUp(int distance, int x, int y, boolean canPierce){
         if(distance == 0 || grid[x][y].type == 4) return;
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
                 int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x1, y1);
+                initialBlast(r, x1, y1, p);
             }
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
-            return;
+            if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].up = true; //Purely for the sprites
-        blastUp(distance - 1, x - 1, y);
+        blastUp(distance - 1, x - 1, y, canPierce);
     }
 
-    private void blastDown(int distance, int x, int y){
+    private void blastDown(int distance, int x, int y, boolean canPierce){
         if(distance == 0 || grid[x][y].type == 4) return;
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
                 int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x1, y1);
+                initialBlast(r, x1, y1, p);
             }
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
-            return;
+            if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].down = true; //Purely for the sprites
-        blastDown(distance - 1, x + 1, y);
+        blastDown(distance - 1, x + 1, y, canPierce);
     }
 
-    private void blastLeft(int distance, int x, int y){
+    private void blastLeft(int distance, int x, int y, boolean canPierce){
         if(distance == 0 || grid[x][y].type == 4) return;
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
                 int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x1, y1);
+                initialBlast(r, x1, y1, p);
             }
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
-            return;
+            if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].left = true; //Purely for the sprites
-        blastLeft(distance - 1, x, y - 1);
+        blastLeft(distance - 1, x, y - 1, canPierce);
     }
 
-    private void blastRight(int distance, int x, int y){
+    private void blastRight(int distance, int x, int y, boolean canPierce){
         if(distance == 0 || grid[x][y].type == 4) return;
         for (int i = 0; i<bombList.size(); i++){
             if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
                 int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
                 if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
                 bombList.get(i).playSound();
                 bombList.remove(i);
-                initialBlast(r, x1, y1);
+                initialBlast(r, x1, y1, p);
             }
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
             if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
-            return;
+            if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
         else grid[x][y].startFire(false);
         grid[x][y].right = true; //Purely for the sprites
-        blastRight(distance - 1, x, y + 1);
+        blastRight(distance - 1, x, y + 1, canPierce);
     }
 
     private void gameOver(int winner){
