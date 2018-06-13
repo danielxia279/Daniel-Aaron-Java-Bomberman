@@ -241,7 +241,6 @@ public class GameState extends GameStateTemplate{
 
     private void dropPower(Tile t){
         int power = rand.nextInt(100);
-        System.out.println(power);
         if(power <= 10) t.powerup = 1;
         else if(power <= 40) t.powerup = 2;
         else if(power <= 60) t.powerup = 3;
