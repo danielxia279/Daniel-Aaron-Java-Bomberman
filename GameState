@@ -120,7 +120,7 @@ public class GameState extends GameStateTemplate{
         x=x^y;
         y=y^x;
         x=x^y;
-        int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+70)/GameWindow.tileSize, y2 = (y+70)/GameWindow.tileSize;
+        int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+69)/GameWindow.tileSize, y2 = (y+69)/GameWindow.tileSize;
         x1++; y1++; x2++; y2++;
         //y1++; y2++;
         //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2);
