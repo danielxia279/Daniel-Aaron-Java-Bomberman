@@ -29,11 +29,12 @@ public class Bomb {
         this.x = x;
         this.y = y;
         this.canPierce = canPierce;
+
         try {
-            sprite1 = ImageIO.read(new File("assets/bomb1.png"));
-            sprite2 = ImageIO.read(new File("assets/bomb2.png"));
-            sprite3 = ImageIO.read(new File("assets/bomb3.png"));
-            sprite4 = ImageIO.read(new File("assets/bomb4.png"));
+            sprite2 = ImageIO.read(new File(bombRadius==15?"assets/power_bomb1.png":"assets/bomb1.png"));
+            sprite1 = ImageIO.read(new File(bombRadius==15?"assets/power_bomb2.png":"assets/bomb2.png"));
+            sprite3 = ImageIO.read(new File(bombRadius==15?"assets/power_bomb3.png":"assets/bomb3.png"));
+            sprite4 = ImageIO.read(new File(bombRadius==15?"assets/power_bomb4.png":"assets/bomb4.png"));
         }
         catch(IOException e){}
     }
