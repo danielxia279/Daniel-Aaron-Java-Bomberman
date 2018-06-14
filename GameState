@@ -12,6 +12,7 @@ This is the playing field game state
 public class GameState extends GameStateTemplate{
 
     private Player playerOne, playerTwo;
+    private Random rand = new Random();
     public static ArrayList<Bomb> bombList;
     public static Tile [][] grid = new Tile[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
     public static int winner = 0;
@@ -67,6 +68,7 @@ public class GameState extends GameStateTemplate{
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).tick();
             if((System.nanoTime() - bombList.get(i).BombStartTime) / 1000000 >= bombList.get(i).fuseLength){
+                System.out.println(bombList.get(i).whoPlaced);
                 int r = bombList.get(i).bombRadius, x = bombList.get(i).y / 70 + 1, y = bombList.get(i).x / 70 + 1;
                 boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
@@ -89,20 +91,36 @@ public class GameState extends GameStateTemplate{
                 grid[i][j].draw(g);
             }
         }
-
+        playerOne.draw(g);
+        playerTwo.draw(g);
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).draw(g);
         }
-        playerOne.draw(g);
-        playerTwo.draw(g);
     }
 
-    public static boolean check (int x, int y){
+    public static boolean checkPlayer (int x, int y){
         //need to swap x and y for graphics to grid
         x=x^y;
         y=y^x;
         x=x^y;
         int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+50)/GameWindow.tileSize, y2 = (y+50)/GameWindow.tileSize;
+        x1++; y1++; x2++; y2++;
+        //y1++; y2++;
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2);
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2+" "+grid[x1][y1]+" "+grid[x2][y2]);
+        int t = 1;
+        t*=grid[x1][y1].type;
+        t*=grid[x1][y2].type;
+        t*=grid[x2][y1].type;
+        t*=grid[x2][y2].type;
+        return t%2==1;
+    }
+    public static boolean checkBomb (int x, int y){
+        //need to swap x and y for graphics to grid
+        x=x^y;
+        y=y^x;
+        x=x^y;
+        int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+70)/GameWindow.tileSize, y2 = (y+70)/GameWindow.tileSize;
         x1++; y1++; x2++; y2++;
         //y1++; y2++;
         //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2);
@@ -160,6 +178,7 @@ public class GameState extends GameStateTemplate{
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
@@ -183,6 +202,7 @@ public class GameState extends GameStateTemplate{
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
@@ -206,6 +226,7 @@ public class GameState extends GameStateTemplate{
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
@@ -229,7 +250,7 @@ public class GameState extends GameStateTemplate{
         }
         if(grid[x][y].type == 2){
             grid[x][y].breaking();
-
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
             if (!canPierce) return;
         }
         if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
@@ -242,4 +263,14 @@ public class GameState extends GameStateTemplate{
         gsm.states.push(new GameOverState(gsm, winner));
     }
 
+    private void dropPower(Tile t){
+        int power = rand.nextInt(100);
+        if(power <= 10) t.powerup = 1;
+        else if(power <= 40) t.powerup = 2;
+        else if(power <= 60) t.powerup = 3;
+        else if(power <= 70) t.powerup = 4;
+        else if(power <= 80) t.powerup = 5;
+        else if(power <= 90) t.powerup = 6;
+        else if(power <= 100) t.powerup = 7;
+    }
 }
