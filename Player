@@ -2,340 +2,258 @@ package game;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
+
 import java.util.*;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
-public class Player{
-    private boolean right, left, up, down;
-    public int x, y, speed = 4, powerBomb=0, lineBomb=2;
-    private int startWalkingx, startWalkingy;
-    public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick=true, canPierce;
-    private int size = 50, type;
-    public int bombRadius = 2, fuseLength = 2200; // milliseconds
-    private BufferedImage up1, up2, up3, right1, right2, right3,
-            down1, down2, down3, left1, left2, left3;
-    public double movingStartTime;
-    public int bombCount = 1;
+/*
+This is the playing field game state
+*/
 
-    public Player(int x, int y, int t) {
-        this.x = x;
-        this.y = y;
-        this.type = t;
-        direction.add(this.type==1?1:3);
-        try {
-            up1 = ImageIO.read(new File(t==1?"assets/red_up1.png":"assets/blue_up1.png"));
-            up2 = ImageIO.read(new File(t==1?"assets/red_up2.png":"assets/blue_up2.png"));
-            up3 = ImageIO.read(new File(t==1?"assets/red_up3.png":"assets/blue_up3.png"));
-            right1 = ImageIO.read(new File(t==1?"assets/red_right1.png":"assets/blue_right1.png"));
-            right2 = ImageIO.read(new File(t==1?"assets/red_right2.png":"assets/blue_right2.png"));
-            right3 = ImageIO.read(new File(t==1?"assets/red_right3.png":"assets/blue_right3.png"));
-            down1 = ImageIO.read(new File(t==1?"assets/red_down1.png":"assets/blue_down1.png"));
-            down2 = ImageIO.read(new File(t==1?"assets/red_down2.png":"assets/blue_down2.png"));
-            down3 = ImageIO.read(new File(t==1?"assets/red_down3.png":"assets/blue_down3.png"));
-            left1 = ImageIO.read(new File(t==1?"assets/red_left1.png":"assets/blue_left1.png"));
-            left2 = ImageIO.read(new File(t==1?"assets/red_left2.png":"assets/blue_left2.png"));
-            left3 = ImageIO.read(new File(t==1?"assets/red_left3.png":"assets/blue_left3.png"));
-        }
-        catch(IOException e){}
+public class GameState extends GameStateTemplate{
+
+    private Player playerOne, playerTwo;
+    private Random rand = new Random();
+    public static ArrayList<Bomb> bombList;
+    public static Tile [][] grid = new Tile[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
+    public static int winner = 0;
+    Color background = new Color((float)0.207, (float)0.439, (float)0.2);
+
+    public GameState(GameStateManager gsm){
+        super(gsm);
     }
+
+    public void init(){
+        winner = 0;
+        Tile.init();
+        playerOne = new Player(80, 920, 1);
+        playerTwo = new Player(920, 80, 2);
+        bombList = new ArrayList<>();
+
+        grid = new Tile[16][16];
+        for (int i = 1; i <=15; i++){
+            for (int j = 1; j <=15; j++){
+                if (i == 1||j == 1||i == 15||j == 15||(i%2 == 1 && j%2 == 1)){
+                    grid[i][j]= new Tile(4, (j-1)*70, (i-1)*70);
+                }
+                else{
+                    int n = (int)Math.ceil(Math.random()*5);
+                    grid[i][j]= new Tile(n==1?1:2, (j-1)*70, (i-1)*70);
+                }
+            }
+        }
+        grid[14][2]= new Tile(1, 70, 910);
+        grid[13][2]= new Tile(1, 70, 840);
+        grid[14][3]= new Tile(1, 140, 910);
+        grid[2][14]= new Tile(1, 910, 70);
+        grid[2][13]= new Tile(1, 840, 70);
+        grid[3][14]= new Tile(1, 910, 140);
+        for (int i = 1; i<= 15; i++){
+            for (int j = 1; j<=15; j++){
+                System.out.print(grid[i][j].type+" ");
+            }
+            System.out.println();
+        }
+    }
+
     public void tick(){
-        if(right){
-            moveRight(speed);
-        }
-        if(left){
-            moveLeft(speed);
-        }
-        if(up){
-            moveUp(speed);
-        }
-        if(down){
-            moveDown(speed);
-        }
-        if(!right && !left && !up && !down) movingStartTime = System.nanoTime();
-        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire) GameState.winner = type==1?2:1;
-        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup != 0){
-            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].power(this);
-            GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup = 0;
-        }
-    }
-    private void lineBomb (int x1, int y1){
-        System.out.println(x1+" "+y1);
-        if (GameState.grid[x1][y1].type!=1) return;
-        if (!GameState.grid[x1][y1].occupied){
-            bombCount--;
-            if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, type, (y1-1)*70, (x1-1)*70, canPierce));
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, type, (y1-1)*70, (x1-1)*70, canPierce));
-        }
-        if (direction.get(direction.size()-1)==1) lineBomb(x1-1, y1);
-        if (direction.get(direction.size()-1)==2) lineBomb(x1, y1+1);
-        if (direction.get(direction.size()-1)==3) lineBomb(x1+1, y1);
-        if (direction.get(direction.size()-1)==4) lineBomb(x1, y1-1);
-    }
-    private static boolean intersects (int p1, int p2){
-        return (Math.abs(p2-p1)<=50);
-    }
-    private void moveRight(int n){
-        for (int i = 0; i<GameState.bombList.size(); i++){
-            if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
-                if (canKick) GameState.bombList.get(i).right=true;
-                return;
-            }
-        }
-        while(n-->0&&GameState.check(x+1, y)){
-            x++;
-            for (int i = 0; i<GameState.bombList.size(); i++){
-                if (x+50==GameState.bombList.get(i).x&&intersects(y, GameState.bombList.get(i).y)){
-                    if (canKick) GameState.bombList.get(i).right=true;
-                    return;
-                }
-            }
-        }
-    }
-    private void moveLeft(int n){
-        for (int i = 0; i<GameState.bombList.size(); i++){
-            if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
-                if (canKick) GameState.bombList.get(i).left=true;
-                return;
-            }
-        }
-        while(n-->0&&GameState.check(x-1, y)){
-            x--;
-            for (int i = 0; i<GameState.bombList.size(); i++){
-                if (x==GameState.bombList.get(i).x+50&&intersects(y, GameState.bombList.get(i).y)){
-                    if (canKick) GameState.bombList.get(i).left=true;
-                    return;
-                }
-            }
-        }
-    }
-    private void moveUp(int n){
-        for (int i = 0; i<GameState.bombList.size(); i++){
-            if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
-                if (canKick) GameState.bombList.get(i).up=true;
-                return;
-            }
-        }
-        while(n-->0&&GameState.check(x, y-1)){
-            y--;
-            for (int i = 0; i<GameState.bombList.size(); i++){
-                if (y==GameState.bombList.get(i).y+50&&intersects(x, GameState.bombList.get(i).x)){
-                    if (canKick) GameState.bombList.get(i).up=true;
-                    return;
-                }
-            }
+        playerOne.tick();
+        playerTwo.tick();
 
-        }
-    }
-    private void moveDown(int n){
-        for (int i = 0; i<GameState.bombList.size(); i++){
-            if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
-                if (canKick) GameState.bombList.get(i).down=true;
-                return;
+        for(int i = 1; i <= 15; i++){
+            for(int j = 1; j <= 15; j++){
+                grid[i][j].tick();
             }
         }
-        while(n-->0&&GameState.check(x, y+1)){
-            y++;
-            for (int i = 0; i<GameState.bombList.size(); i++){
-                if (y+50==GameState.bombList.get(i).y&&intersects(x, GameState.bombList.get(i).x)){
-                    if (canKick) GameState.bombList.get(i).down=true;
-                    return;
-                }
+
+        for(int i = 0; i < bombList.size(); i++){
+            bombList.get(i).tick();
+            if((System.nanoTime() - bombList.get(i).BombStartTime) / 1000000 >= bombList.get(i).fuseLength){
+                System.out.println(bombList.get(i).whoPlaced);
+                int r = bombList.get(i).bombRadius, x = bombList.get(i).y / 70 + 1, y = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x, y, p);
             }
         }
+
+        if(winner != 0) gameOver(winner);
     }
 
     public void draw(Graphics g){
-        if(right || left || up || down){
-            if(direction.get(direction.size()-1) == 1){
-                if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(up2, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(up1, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(up3, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(up1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 2){
-                if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(right2, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(right1, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(right3, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(right1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 3){
-                if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(down2, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(down1, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(down3, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(down1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 4){
-                if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(left2, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(left1, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(left3, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(left1, x, y - 35, null);
+        g.setColor(background);
+        g.fillRect(0, 0, 1050, 1050);
+
+        for (int i = 1; i<=15; i++){
+            for  (int j = 1; j<=15; j++){
+                grid[i][j].draw(g);
             }
         }
-        else{
-            if(direction.get(direction.size()-1) == 1) g.drawImage(up1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 2)g.drawImage(right1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 3)g.drawImage(down1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 4)g.drawImage(left1, x, y - 35, null);
+        playerOne.draw(g);
+        playerTwo.draw(g);
+        for(int i = 0; i < bombList.size(); i++){
+            bombList.get(i).draw(g);
         }
     }
 
+    public static boolean checkPlayer (int x, int y){
+        //need to swap x and y for graphics to grid
+        x=x^y;
+        y=y^x;
+        x=x^y;
+        int x1 = x/GameWindow.tileSize, y1 = y/GameWindow.tileSize, x2 = (x+50)/GameWindow.tileSize, y2 = (y+50)/GameWindow.tileSize;
+        x1++; y1++; x2++; y2++;
+        //y1++; y2++;
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2);
+        //System.out.println(x+" "+y+" "+x1+" "+y1+" "+x2+" "+y2+" "+grid[x1][y1]+" "+grid[x2][y2]);
+        int t = 1;
+        t*=grid[x1][y1].type;
+        t*=grid[x1][y2].type;
+        t*=grid[x2][y1].type;
+        t*=grid[x2][y2].type;
+        return t%2==1;
+    }
     public void keyPressed(int k){
-        if(k == KeyEvent.VK_D&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(2) == -1){
-                    direction.add(2);
-                    startWalkingx = x;
-                }
-            }
-            else direction.set(0, 2);
-            right = true;
-        }
-        if(k == KeyEvent.VK_A&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(4) == -1){
-                    direction.add(4);
-                    startWalkingx = x;
-                }
-            }
-            else direction.set(0, 4);
-            left = true;
-        }
-        if(k == KeyEvent.VK_W&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(1) == -1){
-                    direction.add(1);
-                    startWalkingy = y;
-                }
-            }
-            else direction.set(0, 1);
-            up = true;
-        }
-        if(k == KeyEvent.VK_S&&type==1){
-            if(right || left || up || down){
-                if(direction.indexOf(3) == -1){
-                    direction.add(3);
-                    startWalkingy = y;
-                }
-            }
-            else direction.set(0, 3);
-            down = true;
-        }
-        if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            if(lineBomb>0){
-                //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
-                //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize);
-                //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
-                lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                bombCount++;
-                if (powerBomb>0) powerBomb--;
-                lineBomb--;
-            }
-            else if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-                powerBomb--;
-            }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 1, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-            bombCount--;
-        }
-        if(k == KeyEvent.VK_L&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(2) == -1){
-                    direction.add(2);
-                    startWalkingx = x;
-                }
-            }
-            else direction.set(0, 2);
-            right = true;
-        }
-        if(k == KeyEvent.VK_J&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(4) == -1){
-                    direction.add(4);
-                    startWalkingx = x;
-                }
-            }
-            else direction.set(0, 4);
-            left = true;
-        }
-        if(k == KeyEvent.VK_I&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(1) == -1){
-                    direction.add(1);
-                    startWalkingy = y;
-                }
-            }
-            else direction.set(0, 1);
-            up = true;
-        }
-        if(k == KeyEvent.VK_K&&type==2){
-            if(right || left || up || down){
-                if(direction.indexOf(3) == -1){
-                    direction.add(3);
-                    startWalkingy = y;
-                }
-            }
-            else direction.set(0, 3);
-            down = true;
-        }
-        if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            if(lineBomb>0){
-                //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
-                //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
-                lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                bombCount++;
-                if (powerBomb>0) powerBomb--;
-                lineBomb--;
-            }
-            else if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-                powerBomb--;
-            }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, 2, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-            bombCount--;
-
-        }
+        playerOne.keyPressed(k);
+        playerTwo.keyPressed(k);
+        if(k == KeyEvent.VK_P) gsm.states.push(new PauseState(gsm));
     }
 
-    public void keyReleased(int k){
-        if(k == KeyEvent.VK_D&&type==1){
-            right = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(2));
+    public void keyReleased(int k) {
+        playerOne.keyReleased(k);
+        playerTwo.keyReleased(k);
+    }
+
+    private void initialBlast(int radius, int x, int y, boolean canPierce){
+        grid[x][y].startFire(false);
+        grid[x][y].initial = true; //Purely for the sprites
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1, p);
+            }
         }
-        if(k == KeyEvent.VK_A&&type==1){
-            left = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(4));
+        blastUp(radius - 1, x - 1, y, canPierce);
+        blastDown(radius - 1, x + 1, y, canPierce);
+        blastLeft(radius - 1, x, y - 1, canPierce);
+        blastRight(radius - 1, x, y + 1, canPierce);
+    }
+
+    private void blastUp(int distance, int x, int y, boolean canPierce){
+        if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1, p);
+            }
         }
-        if(k == KeyEvent.VK_W&&type==1){
-            up = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(1));
+        if(grid[x][y].type == 2){
+            grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
+            if (!canPierce) return;
         }
-        if(k == KeyEvent.VK_S&&type==1){
-            down = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(3));
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].up = true; //Purely for the sprites
+        blastUp(distance - 1, x - 1, y, canPierce);
+    }
+
+    private void blastDown(int distance, int x, int y, boolean canPierce){
+        if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1, p);
+            }
         }
-        if(k == KeyEvent.VK_L&&type==2){
-            right = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(2));
+        if(grid[x][y].type == 2){
+            grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
+            if (!canPierce) return;
         }
-        if(k == KeyEvent.VK_J&&type==2){
-            left = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(4));
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].down = true; //Purely for the sprites
+        blastDown(distance - 1, x + 1, y, canPierce);
+    }
+
+    private void blastLeft(int distance, int x, int y, boolean canPierce){
+        if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1, p);
+            }
         }
-        if(k == KeyEvent.VK_I&&type==2){
-            up = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(1));
+        if(grid[x][y].type == 2){
+            grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
+            if (!canPierce) return;
         }
-        if(k == KeyEvent.VK_K&&type==2){
-            down = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(3));
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].left = true; //Purely for the sprites
+        blastLeft(distance - 1, x, y - 1, canPierce);
+    }
+
+    private void blastRight(int distance, int x, int y, boolean canPierce){
+        if(distance == 0 || grid[x][y].type == 4) return;
+        for (int i = 0; i<bombList.size(); i++){
+            if (bombList.get(i).y/70+1==x&&bombList.get(i).x/70+1== y){
+                int r = bombList.get(i).bombRadius, x1 = bombList.get(i).y / 70 + 1, y1 = bombList.get(i).x / 70 + 1;
+                boolean p = bombList.get(i).canPierce;
+                if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
+                if(bombList.get(i).whoPlaced == 2) playerTwo.bombCount++;
+                bombList.get(i).playSound();
+                bombList.remove(i);
+                initialBlast(r, x1, y1, p);
+            }
         }
+        if(grid[x][y].type == 2){
+            grid[x][y].breaking();
+            if(rand.nextInt(100) <= 40) dropPower(grid[x][y]);
+            if (!canPierce) return;
+        }
+        if(distance == 1 && !grid[x][y].isFire) grid[x][y].startFire(true);
+        else grid[x][y].startFire(false);
+        grid[x][y].right = true; //Purely for the sprites
+        blastRight(distance - 1, x, y + 1, canPierce);
+    }
+
+    private void gameOver(int winner){
+        gsm.states.push(new GameOverState(gsm, winner));
+    }
+
+    private void dropPower(Tile t){
+        int power = rand.nextInt(100);
+        if(power <= 10) t.powerup = 1;
+        else if(power <= 40) t.powerup = 2;
+        else if(power <= 60) t.powerup = 3;
+        else if(power <= 70) t.powerup = 4;
+        else if(power <= 80) t.powerup = 5;
+        else if(power <= 90) t.powerup = 6;
+        else if(power <= 100) t.powerup = 7;
     }
 }
-
