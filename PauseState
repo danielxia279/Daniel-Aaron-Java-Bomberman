@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class PauseState extends GameStateTemplate{
 
-    private String[] options = {"Resume", "Quit"};
+    private String[] options = {"Resume", "Restart", "Quit"};
     private int current = 0;
 
     public PauseState(GameStateManager gsm){
@@ -45,9 +45,13 @@ public class PauseState extends GameStateTemplate{
         }
         if(k == KeyEvent.VK_ENTER){
             if(current == 0){
+                GameState.clip.start();
                 gsm.states.pop();
             }
-            else if(current == 1){
+            if(current == 1){
+                gsm.states.push(new GameState(gsm));
+            }
+            else if(current == 2){
                 System.exit(0);
             }
 
@@ -58,4 +62,3 @@ public class PauseState extends GameStateTemplate{
 
     }
 }
-
