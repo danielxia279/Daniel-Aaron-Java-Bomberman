@@ -2,7 +2,8 @@ package game;
 
 import java.awt.*;
 import java.awt.event.*;
-
+import javax.sound.sampled.*;
+import java.io.File;
 import java.util.*;
 
 /*
@@ -19,11 +20,15 @@ public class GameState extends GameStateTemplate{
     public static boolean over;
     Color background = new Color((float)0.207, (float)0.439, (float)0.2);
 
+    public static AudioInputStream gameMusic, deathMusic;
+    public static Clip clip;
+
     public GameState(GameStateManager gsm){
         super(gsm);
     }
 
     public void init(){
+        playSound();
         winner = 0;
         Tile.init();
         playerOne = new Player(80, 920, 1);
@@ -139,7 +144,10 @@ public class GameState extends GameStateTemplate{
     public void keyPressed(int k){
         playerOne.keyPressed(k);
         playerTwo.keyPressed(k);
-        if(k == KeyEvent.VK_P) gsm.states.push(new PauseState(gsm));
+        if(k == KeyEvent.VK_P){
+            clip.stop();
+            gsm.states.push(new PauseState(gsm));
+        }
     }
 
     public void keyReleased(int k) {
@@ -264,6 +272,14 @@ public class GameState extends GameStateTemplate{
     }
 
     private void gameOver(int winner){
+        try{
+            clip.stop();
+            deathMusic = AudioSystem.getAudioInputStream(new File("assets/gameOver.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(deathMusic);
+            clip.start();
+        }
+        catch(Exception e){}
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     public void run() {
@@ -283,5 +299,15 @@ public class GameState extends GameStateTemplate{
         else if(power <= 80) t.powerup = 5;
         else if(power <= 90) t.powerup = 6;
         else if(power <= 100) t.powerup = 7;
+    }
+
+    public static void playSound(){
+        try{
+            gameMusic = AudioSystem.getAudioInputStream(new File("assets/gameMusic.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(gameMusic);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+        catch(Exception e){}
     }
 }
