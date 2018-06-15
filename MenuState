@@ -2,22 +2,30 @@ package game;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 /*
 This is the menu state
 */
 
 public class MenuState extends GameStateTemplate {
-
-    private String[] options = {"Start", "Instructions", "Quit"};
     private int current = 0;
+    private BufferedImage options[] = new BufferedImage[3];
 
     public MenuState(GameStateManager gsm){
         super(gsm);
+        try{
+            options[0] = ImageIO.read(new File("assets/title1.png"));
+            options[1] = ImageIO.read(new File("assets/title2.png"));
+            options[2] = ImageIO.read(new File("assets/title3.png"));
+        }
+        catch(Exception e){}
     }
 
     public void init(){
-
+        
     }
 
     public void tick(){
@@ -25,21 +33,7 @@ public class MenuState extends GameStateTemplate {
     }
 
     public void draw(Graphics g){
-        g.setFont(new Font("Arial", Font.ITALIC, 100));
-        g.drawString("Bomberman", GameWindow.WIDTH / 2 - 270, 150);
-        g.setFont(new Font("Arial", Font.PLAIN, 100));
-        for(int i = 0; i < options.length; i++){
-            if(i == current){
-                g.setColor(Color.RED);
-            }
-            else{
-                g.setColor(Color.BLACK);
-            }
-
-            g.setFont(new Font("Arial", Font.ITALIC, 80));
-            g.drawString(options[i], GameWindow.WIDTH / 2 - 270, 300 + i * 120);
-        }
-
+        g.drawImage(options[current], 0, 0, null);
     }
 
     public void keyPressed(int k){
