@@ -16,6 +16,7 @@ public class GameState extends GameStateTemplate{
     public static ArrayList<Bomb> bombList;
     public static Tile [][] grid = new Tile[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
     public static int winner = 0;
+    public static boolean over;
     Color background = new Color((float)0.207, (float)0.439, (float)0.2);
 
     public GameState(GameStateManager gsm){
@@ -78,8 +79,10 @@ public class GameState extends GameStateTemplate{
                 initialBlast(r, x, y, p);
             }
         }
-
-        if(winner != 0) gameOver(winner);
+        if(over){
+            over = false;
+            gameOver(winner);
+        }
     }
 
     public void draw(Graphics g){
@@ -91,11 +94,12 @@ public class GameState extends GameStateTemplate{
                 grid[i][j].draw(g);
             }
         }
-        playerOne.draw(g);
-        playerTwo.draw(g);
+
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).draw(g);
         }
+        playerOne.draw(g);
+        playerTwo.draw(g);
     }
 
     public static boolean checkPlayer (int x, int y){
@@ -260,7 +264,14 @@ public class GameState extends GameStateTemplate{
     }
 
     private void gameOver(int winner){
-        gsm.states.push(new GameOverState(gsm, winner));
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    public void run() {
+                        gsm.states.push(new GameOverState(gsm, winner));
+                    }
+                },
+                1500
+        );
     }
 
     private void dropPower(Tile t){
