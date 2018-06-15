@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 public class Player{
     private boolean right, left, up, down;
+    private boolean dying;
     public int x, y, speed = 4, powerBomb=0, lineBomb=0;
     private int startWalkingx, startWalkingy;
     public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
@@ -17,8 +18,9 @@ public class Player{
     public int size = 50, type;
     public int bombRadius = 2, fuseLength = 2200; // milliseconds
     private BufferedImage up1, up2, up3, right1, right2, right3,
-            down1, down2, down3, left1, left2, left3;
-    public double movingStartTime;
+            down1, down2, down3, left1, left2, left3,
+            death1, death2, death3, death4, death5, death6;
+    public double movingStartTime, dyingStartTime;
     public int bombCount = 1;
 
     public Player(int x, int y, int t) {
@@ -39,6 +41,12 @@ public class Player{
             left1 = ImageIO.read(new File(t==1?"assets/red_left1.png":"assets/blue_left1.png"));
             left2 = ImageIO.read(new File(t==1?"assets/red_left2.png":"assets/blue_left2.png"));
             left3 = ImageIO.read(new File(t==1?"assets/red_left3.png":"assets/blue_left3.png"));
+            death1 = ImageIO.read(new File(t==1?"assets/red_death1.png":"assets/blue_death1.png"));
+            death2 = ImageIO.read(new File(t==1?"assets/red_death2.png":"assets/blue_death2.png"));
+            death3 = ImageIO.read(new File(t==1?"assets/red_death3.png":"assets/blue_death3.png"));
+            death4 = ImageIO.read(new File(t==1?"assets/red_death4.png":"assets/blue_death4.png"));
+            death5 = ImageIO.read(new File(t==1?"assets/red_death5.png":"assets/blue_death5.png"));
+            death6 = ImageIO.read(new File(t==1?"assets/red_death6.png":"assets/blue_death6.png"));
         }
         catch(IOException e){}
     }
@@ -56,7 +64,12 @@ public class Player{
             moveDown(speed);
         }
         if(!right && !left && !up && !down) movingStartTime = System.nanoTime();
-        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire) GameState.winner = type==1?2:1;
+        if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire){
+            GameState.winner = type==1?2:1;
+            GameState.over = true;
+            if(!dying) dyingStartTime = System.nanoTime();
+            dying = true;
+        }
         if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup != 0){
             GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].power(this);
             GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].powerup = 0;
@@ -148,189 +161,201 @@ public class Player{
     }
 
     public void draw(Graphics g){
-        if(right || left || up || down){
-            if(direction.get(direction.size()-1) == 1){
-                if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(up2, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(up1, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(up3, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(up1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 2){
-                if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(right2, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(right1, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(right3, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(right1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 3){
-                if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(down2, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(down1, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(down3, x, y - 35, null);
-                else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(down1, x, y - 35, null);
-            }
-            if(direction.get(direction.size()-1) == 4){
-                if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(left2, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(left1, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(left3, x, y - 35, null);
-                else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(left1, x, y - 35, null);
-            }
+        if(dying){
+            if(System.nanoTime() - dyingStartTime  < 500000000) g.drawImage(death1, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 700000000) g.drawImage(death2, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 900000000) g.drawImage(death3, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 1100000000) g.drawImage(death4, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 1300000000) g.drawImage(death5, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 1500000000) g.drawImage(death6, x, y - 35, null);
         }
         else{
-            if(direction.get(direction.size()-1) == 1) g.drawImage(up1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 2)g.drawImage(right1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 3)g.drawImage(down1, x, y - 35, null);
-            if(direction.get(direction.size()-1) == 4)g.drawImage(left1, x, y - 35, null);
+            if(right || left || up || down){
+                if(direction.get(direction.size()-1) == 1){
+                    if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(up2, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(up1, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(up3, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(up1, x, y - 35, null);
+                }
+                if(direction.get(direction.size()-1) == 2){
+                    if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(right2, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(right1, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(right3, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(right1, x, y - 35, null);
+                }
+                if(direction.get(direction.size()-1) == 3){
+                    if(Math.abs(startWalkingy - y) % 200 < 50 ) g.drawImage(down2, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 100 ) g.drawImage(down1, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 150 ) g.drawImage(down3, x, y - 35, null);
+                    else if(Math.abs(startWalkingy - y) % 200 < 200 ) g.drawImage(down1, x, y - 35, null);
+                }
+                if(direction.get(direction.size()-1) == 4){
+                    if(Math.abs(startWalkingx - x) % 200 < 50 ) g.drawImage(left2, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 100 ) g.drawImage(left1, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 150 ) g.drawImage(left3, x, y - 35, null);
+                    else if(Math.abs(startWalkingx - x) % 200 < 200 ) g.drawImage(left1, x, y - 35, null);
+                }
+            }
+            else{
+                if(direction.get(direction.size()-1) == 1) g.drawImage(up1, x, y - 35, null);
+                if(direction.get(direction.size()-1) == 2)g.drawImage(right1, x, y - 35, null);
+                if(direction.get(direction.size()-1) == 3)g.drawImage(down1, x, y - 35, null);
+                if(direction.get(direction.size()-1) == 4)g.drawImage(left1, x, y - 35, null);
+            }
         }
     }
 
     public void keyPressed(int k){
-        if(k == KeyEvent.VK_D&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(2) == -1){
-                    direction.add(2);
-                    startWalkingx = x;
+        if(!dying){
+            if(k == KeyEvent.VK_D&&type==1){
+                if(right || left || up || down) {
+                    if (direction.indexOf(2) == -1){
+                        direction.add(2);
+                        startWalkingx = x;
+                    }
                 }
+                else direction.set(0, 2);
+                right = true;
             }
-            else direction.set(0, 2);
-            right = true;
-        }
-        if(k == KeyEvent.VK_A&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(4) == -1){
-                    direction.add(4);
-                    startWalkingx = x;
+            if(k == KeyEvent.VK_A&&type==1){
+                if(right || left || up || down) {
+                    if (direction.indexOf(4) == -1){
+                        direction.add(4);
+                        startWalkingx = x;
+                    }
                 }
+                else direction.set(0, 4);
+                left = true;
             }
-            else direction.set(0, 4);
-            left = true;
-        }
-        if(k == KeyEvent.VK_W&&type==1){
-            if(right || left || up || down) {
-                if (direction.indexOf(1) == -1){
-                    direction.add(1);
-                    startWalkingy = y;
+            if(k == KeyEvent.VK_W&&type==1){
+                if(right || left || up || down) {
+                    if (direction.indexOf(1) == -1){
+                        direction.add(1);
+                        startWalkingy = y;
+                    }
                 }
+                else direction.set(0, 1);
+                up = true;
             }
-            else direction.set(0, 1);
-            up = true;
-        }
-        if(k == KeyEvent.VK_S&&type==1){
-            if(right || left || up || down){
-                if(direction.indexOf(3) == -1){
-                    direction.add(3);
-                    startWalkingy = y;
+            if(k == KeyEvent.VK_S&&type==1){
+                if(right || left || up || down){
+                    if(direction.indexOf(3) == -1){
+                        direction.add(3);
+                        startWalkingy = y;
+                    }
                 }
+                else direction.set(0, 3);
+                down = true;
             }
-            else direction.set(0, 3);
-            down = true;
-        }
-        if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[(y+25) / GameWindow.tileSize + 1][(x+25) / GameWindow.tileSize + 1].occupied){
-            if(lineBomb>0){
-                //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
-                //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize);
-                //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
-                lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                bombCount++;
-                if (powerBomb>0) powerBomb--;
-                lineBomb--;
-            }
-            else if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-                powerBomb--;
-            }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-        }
-        if(k == KeyEvent.VK_L&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(2) == -1){
-                    direction.add(2);
-                    startWalkingx = x;
+            if(k == KeyEvent.VK_Q&&type==1&&bombCount>0&&!GameState.grid[(y+25) / GameWindow.tileSize + 1][(x+25) / GameWindow.tileSize + 1].occupied){
+                if(lineBomb>0){
+                    //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
+                    //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
+                    //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize);
+                    //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
+                    lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
+                    bombCount++;
+                    if (powerBomb>0) powerBomb--;
+                    lineBomb--;
                 }
-            }
-            else direction.set(0, 2);
-            right = true;
-        }
-        if(k == KeyEvent.VK_J&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(4) == -1){
-                    direction.add(4);
-                    startWalkingx = x;
+                else if(powerBomb>0){
+                    GameState.bombList.add(new Bomb(fuseLength, 15, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+                    powerBomb--;
                 }
+                else GameState.bombList.add(new Bomb(fuseLength, bombRadius, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
             }
-            else direction.set(0, 4);
-            left = true;
-        }
-        if(k == KeyEvent.VK_I&&type==2){
-            if(right || left || up || down) {
-                if (direction.indexOf(1) == -1){
-                    direction.add(1);
-                    startWalkingy = y;
+            if(k == KeyEvent.VK_L&&type==2){
+                if(right || left || up || down) {
+                    if (direction.indexOf(2) == -1){
+                        direction.add(2);
+                        startWalkingx = x;
+                    }
                 }
+                else direction.set(0, 2);
+                right = true;
             }
-            else direction.set(0, 1);
-            up = true;
-        }
-        if(k == KeyEvent.VK_K&&type==2){
-            if(right || left || up || down){
-                if(direction.indexOf(3) == -1){
-                    direction.add(3);
-                    startWalkingy = y;
+            if(k == KeyEvent.VK_J&&type==2){
+                if(right || left || up || down) {
+                    if (direction.indexOf(4) == -1){
+                        direction.add(4);
+                        startWalkingx = x;
+                    }
                 }
+                else direction.set(0, 4);
+                left = true;
             }
-            else direction.set(0, 3);
-            down = true;
-        }
-        if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
-            if(lineBomb>0){
-                //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
-                //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
-                //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
-                lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
-                bombCount++;
-                if (powerBomb>0) powerBomb--;
-                lineBomb--;
+            if(k == KeyEvent.VK_I&&type==2){
+                if(right || left || up || down) {
+                    if (direction.indexOf(1) == -1){
+                        direction.add(1);
+                        startWalkingy = y;
+                    }
+                }
+                else direction.set(0, 1);
+                up = true;
             }
-            else if(powerBomb>0){
-                GameState.bombList.add(new Bomb(fuseLength, 15, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
-                powerBomb--;
+            if(k == KeyEvent.VK_K&&type==2){
+                if(right || left || up || down){
+                    if(direction.indexOf(3) == -1){
+                        direction.add(3);
+                        startWalkingy = y;
+                    }
+                }
+                else direction.set(0, 3);
+                down = true;
             }
-            else GameState.bombList.add(new Bomb(fuseLength, bombRadius, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+            if(k == KeyEvent.VK_U&&type==2&&bombCount>0&&!GameState.grid[y / GameWindow.tileSize + 1][x / GameWindow.tileSize + 1].occupied){
+                if(lineBomb>0){
+                    //if (direction.get(direction.size()-1)==1)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
+                    //if (direction.get(direction.size()-1)==2)lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+2);
+                    //if (direction.get(direction.size()-1)==3)lineBomb(y/GameWindow.tileSize, x/GameWindow.tileSize+1);
+                    //if (direction.get(direction.size()-1)==4)lineBomb(y/GameWindow.tileSize+2, x/GameWindow.tileSize+1);
+                    lineBomb(y/GameWindow.tileSize+1, x/GameWindow.tileSize+1);
+                    bombCount++;
+                    if (powerBomb>0) powerBomb--;
+                    lineBomb--;
+                }
+                else if(powerBomb>0){
+                    GameState.bombList.add(new Bomb(fuseLength, 15, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+                    powerBomb--;
+                }
+                else GameState.bombList.add(new Bomb(fuseLength, bombRadius, this, ((x+25)/70)*70, ((y+25)/70)*70, canPierce));
+            }
         }
     }
 
     public void keyReleased(int k){
-        if(k == KeyEvent.VK_D&&type==1){
-            right = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(2));
-        }
-        if(k == KeyEvent.VK_A&&type==1){
-            left = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(4));
-        }
-        if(k == KeyEvent.VK_W&&type==1){
-            up = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(1));
-        }
-        if(k == KeyEvent.VK_S&&type==1){
-            down = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(3));
-        }
-        if(k == KeyEvent.VK_L&&type==2){
-            right = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(2));
-        }
-        if(k == KeyEvent.VK_J&&type==2){
-            left = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(4));
-        }
-        if(k == KeyEvent.VK_I&&type==2){
-            up = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(1));
-        }
-        if(k == KeyEvent.VK_K&&type==2){
-            down = false;
-            if(direction.size() > 1) direction.remove(direction.indexOf(3));
-        }
+            if(k == KeyEvent.VK_D&&type==1){
+                right = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(2));
+            }
+            if(k == KeyEvent.VK_A&&type==1){
+                left = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(4));
+            }
+            if(k == KeyEvent.VK_W&&type==1){
+                up = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(1));
+            }
+            if(k == KeyEvent.VK_S&&type==1){
+                down = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(3));
+            }
+            if(k == KeyEvent.VK_L&&type==2){
+                right = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(2));
+            }
+            if(k == KeyEvent.VK_J&&type==2){
+                left = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(4));
+            }
+            if(k == KeyEvent.VK_I&&type==2){
+                up = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(1));
+            }
+            if(k == KeyEvent.VK_K&&type==2){
+                down = false;
+                if(direction.size() > 1) direction.remove(direction.indexOf(3));
+            }
     }
 }
