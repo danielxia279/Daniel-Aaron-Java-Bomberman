@@ -48,6 +48,7 @@ public class GameOverState extends GameStateTemplate {
         }
         if(k == KeyEvent.VK_ENTER){
             if(current == 0){
+                GameState.clip.stop();
                 gsm.states.push(new MenuState(gsm));
             }
             else if(current == 1){
