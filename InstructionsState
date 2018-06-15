@@ -7,7 +7,9 @@ package game;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 public class InstructionsState extends GameStateTemplate{
-    private String[] options = {"Player 1 - WASD to Move, Q to place Bomb.", "Player 2 - IJKL to Move, U to place Bomb.", "Backspace - Return to Menu"};
+    private String[] options = {"Controls:", "Player 1 - WASD to Move, Q to place Bomb.", "Player 2 - IJKL to Move, U to place Bomb.","",
+        "Instructions:", "Place bombs to break blocks and try to" ,"hit the other player.", "", ""
+            ,"Press Backspace to Return to Menu"};
 
     public InstructionsState(GameStateManager gsm){
         super(gsm);
