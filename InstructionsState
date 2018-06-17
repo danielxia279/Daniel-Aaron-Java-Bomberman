@@ -4,15 +4,38 @@
  * and open the template in the editor.
  */
 package game;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 public class InstructionsState extends GameStateTemplate{
     private String[] options = {"Controls:", "Player 1 - WASD to Move, Q to place Bomb.", "Player 2 - IJKL to Move, U to place Bomb.","",
-        "Instructions:", "Place bombs to break blocks and try to" ,"hit the other player.", "", ""
+            "Instructions:", "Place bombs to break blocks and try to" ,"hit the other player.", "", ""
             ,"Press Backspace to Return to Menu"};
+    private double startTime;
+    private BufferedImage playerOne1, playerOne2, playerOne3,
+                          playerTwo1, playerTwo2, playerTwo3,
+                          bomb1, bomb2, bomb3, bomb4;
 
     public InstructionsState(GameStateManager gsm){
         super(gsm);
+        try {
+            playerOne1 = ImageIO.read(new File("assets/red_down1.png"));
+            playerOne2 = ImageIO.read(new File("assets/red_down2.png"));
+            playerOne3 = ImageIO.read(new File("assets/red_down3.png"));
+            playerTwo1 = ImageIO.read(new File("assets/blue_down1.png"));
+            playerTwo2 = ImageIO.read(new File("assets/blue_down2.png"));
+            playerTwo3 = ImageIO.read(new File("assets/blue_down3.png"));
+            bomb1 = ImageIO.read(new File("assets/bomb1.png"));
+            bomb2 = ImageIO.read(new File("assets/bomb2.png"));
+            bomb3 = ImageIO.read(new File("assets/bomb3.png"));
+            bomb4 = ImageIO.read(new File("assets/bomb4.png"));
+        }
+        catch(IOException e){}
+        startTime = System.nanoTime();
     }
 
     public void init(){
@@ -27,8 +50,29 @@ public class InstructionsState extends GameStateTemplate{
         g.setFont(new Font("Arial", Font.PLAIN, 35));
         for(int i = 0; i < options.length; i++){
             g.setColor(Color.BLACK);
-            g.drawString(options[i], GameWindow.WIDTH / 2 - 370, 200 + i * 70);
+            g.drawString(options[i], GameWindow.WIDTH / 2 - 370, 200 + i * 100);
         }
+        if((System.nanoTime() - startTime) % 1200000000 < 300000000){
+            g.drawImage(playerOne1, 80, 220, null);
+            g.drawImage(playerTwo1, 80, 320, null);
+        }
+        else if((System.nanoTime() - startTime) % 1200000000 < 600000000){
+            g.drawImage(playerOne2, 80, 220, null);
+            g.drawImage(playerTwo2, 80, 320, null);
+        }
+        else if((System.nanoTime() - startTime) % 1200000000 < 900000000){
+            g.drawImage(playerOne1, 80, 220, null);
+            g.drawImage(playerTwo1, 80, 320, null);
+        }
+        else if((System.nanoTime() - startTime) % 1200000000 < 1200000000){
+            g.drawImage(playerOne3, 80, 220, null);
+            g.drawImage(playerTwo3, 80, 320, null);
+        }
+        if((System.nanoTime() - startTime) % 1000000000 < 400000000) g.drawImage(bomb1, 75, 650, null);
+        else if((System.nanoTime() - startTime) % 1000000000 < 600000000) g.drawImage(bomb2, 75, 650, null);
+        else if((System.nanoTime() - startTime) % 1000000000 < 800000000) g.drawImage(bomb3, 75, 650, null);
+        else if((System.nanoTime() - startTime) % 1000000000 < 1000000000) g.drawImage(bomb4, 75, 650, null);
+
     }
 
     public void keyPressed(int k){
