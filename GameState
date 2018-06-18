@@ -88,6 +88,7 @@ public class GameState extends GameStateTemplate{
             over = false;
             gameOver(winner);
         }
+        System.out.println(playerOne.direction);
     }
 
     public void draw(Graphics g){
@@ -95,7 +96,7 @@ public class GameState extends GameStateTemplate{
         g.fillRect(0, 0, 1050, 1050);
 
         for (int i = 1; i<=15; i++){
-            for  (int j = 1; j<=15; j++){
+            for (int j = 1; j<=15; j++){
                 grid[i][j].draw(g);
             }
         }
@@ -146,7 +147,19 @@ public class GameState extends GameStateTemplate{
         playerTwo.keyPressed(k);
         if(k == KeyEvent.VK_P){
             clip.stop();
-            gsm.states.push(new PauseState(gsm));
+            if(!playerOne.dying){
+                playerOne.right = false;
+                playerOne.left = false;
+                playerOne.up = false;
+                playerOne.down = false;
+            }
+            if(!playerTwo.dying){
+                playerTwo.right = false;
+                playerTwo.left = false;
+                playerTwo.up = false;
+                playerTwo.down = false;
+            }
+            gsm.states.push(new PauseState(gsm, this));
         }
     }
 
