@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.sound.sampled.*;
 import javax.imageio.ImageIO;
 
 /*
@@ -13,6 +14,7 @@ This is the menu state
 public class MenuState extends GameStateTemplate {
     private int current = 0;
     private BufferedImage options[] = new BufferedImage[3];
+    private Clip clip;
 
     public MenuState(GameStateManager gsm){
         super(gsm);
@@ -20,12 +22,13 @@ public class MenuState extends GameStateTemplate {
             options[0] = ImageIO.read(new File("assets/title1.png"));
             options[1] = ImageIO.read(new File("assets/title2.png"));
             options[2] = ImageIO.read(new File("assets/title3.png"));
+            playSound();
         }
         catch(Exception e){}
     }
 
     public void init(){
-        
+
     }
 
     public void tick(){
@@ -45,6 +48,7 @@ public class MenuState extends GameStateTemplate {
         }
         if(k == KeyEvent.VK_ENTER){
             if(current == 0){
+                clip.stop();
                 gsm.states.push(new GameState(gsm));
             }
             else if(current == 1){
@@ -61,5 +65,15 @@ public class MenuState extends GameStateTemplate {
 
     public void keyReleased(int k){
 
+    }
+
+    public void playSound(){
+        try{
+            AudioInputStream menuMusic = AudioSystem.getAudioInputStream(new File("assets/menuMusic.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(menuMusic);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+        catch(Exception e){}
     }
 }
