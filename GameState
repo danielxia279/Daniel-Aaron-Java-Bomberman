@@ -18,6 +18,7 @@ public class GameState extends GameStateTemplate{
     public static Tile [][] grid = new Tile[16][16]; //1 = nothing, 2 = breakable, 4 = unbreakable
     public static int winner = 0;
     public static boolean over;
+    public static double gameEndTimer;
     Color background = new Color((float)0.207, (float)0.439, (float)0.2);
 
     public static AudioInputStream gameMusic, deathMusic;
@@ -53,12 +54,14 @@ public class GameState extends GameStateTemplate{
         grid[2][14]= new Tile(1, 910, 70);
         grid[2][13]= new Tile(1, 840, 70);
         grid[3][14]= new Tile(1, 910, 140);
+        /*
         for (int i = 1; i<= 15; i++){
             for (int j = 1; j<=15; j++){
                 System.out.print(grid[i][j].type+" ");
             }
             System.out.println();
         }
+        */
     }
 
     public void tick(){
@@ -74,7 +77,6 @@ public class GameState extends GameStateTemplate{
         for(int i = 0; i < bombList.size(); i++){
             bombList.get(i).tick();
             if((System.nanoTime() - bombList.get(i).BombStartTime) / 1000000 >= bombList.get(i).fuseLength){
-                System.out.println(bombList.get(i).whoPlaced);
                 int r = bombList.get(i).bombRadius, x = bombList.get(i).y / 70 + 1, y = bombList.get(i).x / 70 + 1;
                 boolean p = bombList.get(i).canPierce;
                 if(bombList.get(i).whoPlaced == 1) playerOne.bombCount++;
@@ -85,10 +87,8 @@ public class GameState extends GameStateTemplate{
             }
         }
         if(over){
-            over = false;
             gameOver(winner);
         }
-        System.out.println(playerOne.direction);
     }
 
     public void draw(Graphics g){
@@ -293,14 +293,10 @@ public class GameState extends GameStateTemplate{
             clip.start();
         }
         catch(Exception e){}
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    public void run() {
-                        gsm.states.push(new GameOverState(gsm, winner));
-                    }
-                },
-                1500
-        );
+        if(System.nanoTime() - gameEndTimer > 1500000000){
+            over = false;
+            gsm.states.push(new GameOverState(gsm, winner));
+        }
     }
 
     private void dropPower(Tile t){
