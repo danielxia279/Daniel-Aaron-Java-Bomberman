@@ -9,12 +9,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Player{
-    private boolean right, left, up, down;
-    private boolean dying;
+    public boolean right, left, up, down;
+    public boolean dying;
     public int x, y, speed = 4, powerBomb=0, lineBomb=0;
     private int startWalkingx, startWalkingy;
     public ArrayList<Integer> direction = new ArrayList<>(); // 1 = up, 2 = right, 3 = down, 4 = left
-    public boolean canKick=true, canPierce;
+    public boolean canKick, canPierce;
     public int size = 50, type;
     public int bombRadius = 2, fuseLength = 2200; // milliseconds
     private BufferedImage up1, up2, up3, right1, right2, right3,
@@ -65,8 +65,15 @@ public class Player{
         }
         if(!right && !left && !up && !down) movingStartTime = System.nanoTime();
         if(GameState.grid[(y + 25) / GameWindow.tileSize + 1][(x + 25) / GameWindow.tileSize + 1].isFire){
-            GameState.winner = type==1?2:1;
+            if(!dying){
+                GameState.winner += type==1?2:1;
+                GameState.gameEndTimer = System.nanoTime();
+            }
             GameState.over = true;
+            right = false;
+            left = false;
+            up = false;
+            down = false;
             if(!dying) dyingStartTime = System.nanoTime();
             dying = true;
         }
@@ -76,7 +83,6 @@ public class Player{
         }
     }
     private void lineBomb (int x1, int y1){
-        System.out.println(x1+" "+y1);
         if (GameState.grid[x1][y1].type!=1) return;
         if (!GameState.grid[x1][y1].occupied){
             if (powerBomb>0) GameState.bombList.add(new Bomb(fuseLength, 15, this, (y1-1)*70, (x1-1)*70, canPierce));
@@ -139,7 +145,6 @@ public class Player{
                     return;
                 }
             }
-
         }
     }
     private void moveDown(int n){
@@ -167,7 +172,7 @@ public class Player{
             else if(System.nanoTime() - dyingStartTime < 900000000) g.drawImage(death3, x, y - 35, null);
             else if(System.nanoTime() - dyingStartTime < 1100000000) g.drawImage(death4, x, y - 35, null);
             else if(System.nanoTime() - dyingStartTime < 1300000000) g.drawImage(death5, x, y - 35, null);
-            else if(System.nanoTime() - dyingStartTime < 1500000000) g.drawImage(death6, x, y - 35, null);
+            else if(System.nanoTime() - dyingStartTime < 1800000000) g.drawImage(death6, x, y - 35, null);
         }
         else{
             if(right || left || up || down){
@@ -325,37 +330,37 @@ public class Player{
     }
 
     public void keyReleased(int k){
-            if(k == KeyEvent.VK_D&&type==1){
-                right = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(2));
-            }
-            if(k == KeyEvent.VK_A&&type==1){
-                left = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(4));
-            }
-            if(k == KeyEvent.VK_W&&type==1){
-                up = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(1));
-            }
-            if(k == KeyEvent.VK_S&&type==1){
-                down = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(3));
-            }
-            if(k == KeyEvent.VK_L&&type==2){
-                right = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(2));
-            }
-            if(k == KeyEvent.VK_J&&type==2){
-                left = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(4));
-            }
-            if(k == KeyEvent.VK_I&&type==2){
-                up = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(1));
-            }
-            if(k == KeyEvent.VK_K&&type==2){
-                down = false;
-                if(direction.size() > 1) direction.remove(direction.indexOf(3));
-            }
+        if(k == KeyEvent.VK_D&&type==1){
+            right = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(2));
+        }
+        if(k == KeyEvent.VK_A&&type==1){
+            left = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(4));
+        }
+        if(k == KeyEvent.VK_W&&type==1){
+            up = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(1));
+        }
+        if(k == KeyEvent.VK_S&&type==1){
+            down = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(3));
+        }
+        if(k == KeyEvent.VK_L&&type==2){
+            right = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(2));
+        }
+        if(k == KeyEvent.VK_J&&type==2){
+            left = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(4));
+        }
+        if(k == KeyEvent.VK_I&&type==2){
+            up = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(1));
+        }
+        if(k == KeyEvent.VK_K&&type==2){
+            down = false;
+            if(direction.size() > 1) direction.remove(direction.indexOf(3));
+        }
     }
 }
