@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.*;
 
 /*
-Contains a stack of game states as some form of ghetto polymorphism
+Contains a stack of game states as a form of polymorphism
 the functions tick, draw, keyPressed, keyReleased depend on the game state
 */
 
