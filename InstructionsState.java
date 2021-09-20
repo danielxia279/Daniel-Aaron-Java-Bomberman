@@ -1,4 +1,3 @@
-package game;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -8,10 +7,11 @@ import java.io.IOException;
 
 public class InstructionsState extends StateTemplate {
     private double startTime;
-    private BufferedImage options[] = new BufferedImage[4], BombUpSprite, bombKickSprite, fireSprite, bombPierce, bombPierceSprite, lineBombSprite, powerBombSprite, skateSprite;
+    private BufferedImage options[] = new BufferedImage[4], BombUpSprite, bombKickSprite, fireSprite, bombPierce,
+            bombPierceSprite, lineBombSprite, powerBombSprite, skateSprite;
     private int current = 0;
 
-    public InstructionsState(StateManager gsm){
+    public InstructionsState(StateManager gsm) {
         super(gsm);
         try {
             options[0] = ImageIO.read(new File("assets/control1.png"));
@@ -25,22 +25,22 @@ public class InstructionsState extends StateTemplate {
             lineBombSprite = ImageIO.read(new File("assets/lineBomb.png"));
             powerBombSprite = ImageIO.read(new File("assets/powerBomb.png"));
             skateSprite = ImageIO.read(new File("assets/skate.png"));
+        } catch (IOException e) {
         }
-        catch(IOException e){}
         startTime = System.nanoTime();
     }
 
-    public void init(){
+    public void init() {
 
     }
 
-    public void tick(){
+    public void tick() {
 
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g) {
         g.drawImage(options[current], 0, 0, null);
-        if (current==3){
+        if (current == 3) {
             g.drawImage(BombUpSprite, 50, 235, null);
             g.drawImage(fireSprite, 50, 310, null);
             g.drawImage(skateSprite, 50, 385, null);
@@ -51,19 +51,23 @@ public class InstructionsState extends StateTemplate {
         }
     }
 
-    public void keyPressed(int k){
-        if(k == KeyEvent.VK_RIGHT){
-            if (current==3) gsm.states.pop();
-            else current++;
+    public void keyPressed(int k) {
+        if (k == KeyEvent.VK_RIGHT) {
+            if (current == 3)
+                gsm.states.pop();
+            else
+                current++;
         }
-        if(k == KeyEvent.VK_LEFT){
-            if (current==0) gsm.states.pop();
-            else current--;
+        if (k == KeyEvent.VK_LEFT) {
+            if (current == 0)
+                gsm.states.pop();
+            else
+                current--;
         }
 
     }
 
-    public void keyReleased(int k){
+    public void keyReleased(int k) {
 
     }
 }

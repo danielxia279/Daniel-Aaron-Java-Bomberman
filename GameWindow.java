@@ -1,5 +1,3 @@
-package game;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -29,59 +27,59 @@ public class GameWindow extends JPanel implements Runnable, KeyListener {
 
     private StateManager sm;
 
-    private void launch(){
+    private void launch() {
         isRunning = true;
         thread = new Thread(this);
         thread.start();
     }
 
-    public void run(){
+    public void run() {
         long elapsedTime, startTime, waitTime;
         sm = new StateManager();
-        while(isRunning){
+        while (isRunning) {
             startTime = System.nanoTime();
             tick();
             repaint();
             elapsedTime = System.nanoTime() - startTime;
             waitTime = frameTime - elapsedTime / 1000000;
 
-            if(waitTime <= 0){
+            if (waitTime <= 0) {
                 waitTime = 5;
             }
 
-            try{
+            try {
                 Thread.sleep(waitTime);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void tick(){
+    public void tick() {
         sm.tick();
     }
 
-    public void paintComponent(Graphics g){
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
-        try{
+        try {
             sm.draw(g);
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
     }
 
-    public void keyPressed(KeyEvent e){
+    public void keyPressed(KeyEvent e) {
         sm.keyPressed(e.getKeyCode());
     }
 
-    public void keyReleased(KeyEvent e){
+    public void keyReleased(KeyEvent e) {
         sm.keyReleased(e.getKeyCode());
     }
 
-    public void keyTyped(KeyEvent e){
+    public void keyTyped(KeyEvent e) {
 
     }
-
 
 }
